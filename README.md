@@ -2,6 +2,8 @@
 
 # Low Input Epigenomics 2024: 10 to 17 May 2024
 
+Learn the latest approaches to study chromatin biology at the gene and genome-wide levels in rare cell populations
+
 Shield: [![CC BY 4.0][cc-by-shield]][cc-by]
 
 This work is licensed under a
