@@ -1,3 +1,5 @@
+Generating Hi-C matrices
+================
 
 <!-- hic_matrix_generation.md is generated from hic_matrix_generation.Rmd. Please edit that file -->
 
@@ -106,17 +108,17 @@ fanc auto SRR4271982_chr18_19_1.fastq.gzip \
 The –run-with test argument causes fanc to only print the commands it
 would execute, but to exit before running any processing steps. Use this
 to review the pipeline and ensure you chose the right parameters and
-that there are no errors. When you remove the –run-with test
-argument, fanc will work through the pipeline. On a modern desktop
-computer with at least four computing cores the command should take less
-than 30 minutes to finish. It will generate several binned,
-bias-corrected Hi-C matrices from the FASTQ input.
+that there are no errors. When you remove the –run-with test argument,
+fanc will work through the pipeline. On a modern desktop computer with
+at least four computing cores the command should take less than 30
+minutes to finish. It will generate several binned, bias-corrected Hi-C
+matrices from the FASTQ input.
 
 3)  Run fanc on the example data by removing the –run-with test argument
     from the command above. (THIS STEP WILL TAKE ~30 MINUTES.) Leave
     this process running and open a new terminal to work with in the
     meantime. You can read details about fanc auto and all of its
-    parameters in Generating Hi-C matrices with fanc. (4) fanc auto will
+    parameters in Generating Hi-C matrices with fanc. (4) fanc auto will
     generate the following folder structure in the output folder:
 
 ``` r
@@ -244,13 +246,13 @@ fanc map SRR4271982_chr18_19_1.fastq.gzip \
 You can change the suffix of the output file to .bam and fanc map will
 automatically convert the mapping output to BAM format.
 
-3)  Because of the chimeric nature of Hi-C fragments, fanc auto performs
+3)  Because of the chimeric nature of Hi-C fragments, fanc auto performs
     iterative mapping as a default: Reads are initially trimmed to 25bp
-    (change this with the -m option) before mapping, and then
-    iteratively expanded by 10bp (change the step size with
-    the -s option) until a unique, high quality mapping location can be
-    found. The associated quality cut-off is 3 for BWA and 30 for
-    Bowtie2, but can be changed with the -q parameter. (DO NOT RUN)
+    (change this with the -m option) before mapping, and then
+    iteratively expanded by 10bp (change the step size with the -s
+    option) until a unique, high quality mapping location can be found.
+    The associated quality cut-off is 3 for BWA and 30 for Bowtie2, but
+    can be changed with the -q parameter. (DO NOT RUN)
 
 ``` r
 # expand by 5bp every iteration and accept lower quality
@@ -285,7 +287,7 @@ Bowtie2, you can additionally use the –memory-map option, which will
 load the entire Bowtie2 index into memory to be shared across all
 Bowtie2 processes. Use this option if your system has a lot of memory
 available to speed up the mapping. Finally, if you are using the -tmp
-option, which causes fanc auto to perform most pipeline steps in a
+option, which causes fanc auto to perform most pipeline steps in a
 temporary directory, you may want to use the –split-fastq option to
 split the FASTQ files into smaller chunks before mapping, so you can
 save space on your tmp partition. In practice, most of these parameters
@@ -295,11 +297,11 @@ number of threads to be used
 
 # Practical 5: fanc pairs: Generating and filtering read Pairs
 
-The fanc pairs command handles the creation and modification of Pairs
+The fanc pairs command handles the creation and modification of Pairs
 objects, which represent the mate pairs in a Hi-C library mapped to
 restriction fragments. Possible inputs are: two SAM/BAM files
-(paired-end reads, sorted by read name), a HiC-Pro valid pairs file,
-a 4D Nucleome pairs file, or an existing FAN-C Pairs object.
+(paired-end reads, sorted by read name), a HiC-Pro valid pairs file, a
+4D Nucleome pairs file, or an existing FAN-C Pairs object.
 
 To process SAM/BAM files, no additional external software is required.
 However, we do recommend the installation of Sambamba, which can greatly
@@ -719,7 +721,7 @@ fanc auto SRR4271982_chr18_19_1.fastq.gzip \
       --split-ligation-junction -q 30
 ```
 
-## Answers
+# Answers
 
 1.  For this analysis, we switched to using the full hg38 genome instead
     of only two hg19 chromosomes. It’s always a good idea to use the
