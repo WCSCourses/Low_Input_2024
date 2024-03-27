@@ -1,0 +1,16 @@
+# general macOS files
+.DS_Store
+*/.DS_Store
+*/*/.DS_Store
+
+# r files
+.Rhistory
+*/.Rhistory
+*/*/.Rhistory
+
+# not supported files
+*.html
+*/*.html
+*/*/*.html
+
+# not relevant files for the cloud

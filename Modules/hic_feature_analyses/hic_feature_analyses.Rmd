@@ -1,0 +1,13 @@
+---
+output: github_document
+---
+
+<!-- hic_feature_analyses.md is generated from hic_feature_analyses.Rmd. Please edit that file -->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
