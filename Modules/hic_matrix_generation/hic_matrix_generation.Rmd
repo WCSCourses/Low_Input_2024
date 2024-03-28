@@ -1,10 +1,10 @@
 ---
 title: Generating Hi-C matrices
 output: 
- github_document: 
-  default
- pdf_document: 
-  latex_engine: xelatex
+  github_document: 
+    default
+  pdf_document: 
+    latex_engine: xelatex
 ---
 
 <!-- hic_matrix_generation.md is generated from hic_matrix_generation.Rmd. Please edit that file -->
@@ -41,7 +41,7 @@ fanc --help
 ```{r fanc_a, eval = FALSE}
 fanc auto
 ```
-(7) The code above should have given us an error due to missing arguments needed to run it. In this case, we needed to provide input FASTQ files, the name of the restriction enzyme used, the genome studied and an output folder. To know the arguments that are needed to run each analysis and get a little help on the subcommand of interest we can simply type: fanc <subcommand> --help. For example, we can check the help for fanc auto by typing:
+(7) The code above should have given us an error due to missing arguments needed to run it. In this case, we needed to provide input FASTQ files, the name of the restriction enzyme used, the genome studied and an output folder. To know the arguments that are needed to run each analysis and get a little help on the subcommand of interest we can simply type: fanc \<subcommand\> --help. For example, we can check the help for fanc auto by typing:
 
 ```{r fanc_ah, eval = FALSE}
 fanc auto --help
@@ -150,7 +150,11 @@ fancplot chr18:63mb-70mb \
 
 The following schematic will give you an overview of what file types fanc auto can handle and how they are processed downstream.
 
+<center>
+
 ![](figures/hic_matrix_generation_figure_1.png)
+
+</center>
 
 fanc auto will map reads in FASTQ (or gzipped FASTQ) files to a reference genome, generating SAM/BAM files. SAM/BAM files with paired-end reads will be automatically sorted and mate pairs will be matched to generate Pairs files. Pairs files will be converted into fragment-level Hic objects. Multiple fragment-level Hic objects will be merged into a single Hi-C object. Finally, the fragment-level Hic object will be binned at various bin sizes.
 
@@ -195,7 +199,7 @@ fanc map SRR4271982_chr18_19_1.fastq.gzip \
       SRR4271982_chr18_19_1.sam -m 20 -s 5 -q 10
 ```
 
-(4) BWA will automatically split chimeric reads and return both mapping locations. This is especially useful for Hi-C data, as reads are often sequenced through a ligation junction, which BWA can often detect automatically. Nonetheless, mapping may be improved by splitting reads at predicted ligation junctions from the start. To enable this, use the -r parameter and supply the name of a restriction enzyme (e.g. HindIII or MboI). The name will be used to look up the enzyme’s restriction pattern, predict the sequence of a ligation junction, and split reads at the predicted junction before mapping starts. Reads split in this manner will have an additional attribute in the SAM/BAM file ZL:i:<n> where <n> is an integer denoting the part of the split read. (DO NOT RUN)
+(4) BWA will automatically split chimeric reads and return both mapping locations. This is especially useful for Hi-C data, as reads are often sequenced through a ligation junction, which BWA can often detect automatically. Nonetheless, mapping may be improved by splitting reads at predicted ligation junctions from the start. To enable this, use the -r parameter and supply the name of a restriction enzyme (e.g. HindIII or MboI). The name will be used to look up the enzyme’s restriction pattern, predict the sequence of a ligation junction, and split reads at the predicted junction before mapping starts. Reads split in this manner will have an additional attribute in the SAM/BAM file ZL:i:\<n\> where \<n\> is an integer denoting the part of the split read. (DO NOT RUN)
 
 ```{r fanc_mlj, eval = FALSE}
 # Split reads at HindIII ligation junction before mapping
@@ -235,7 +239,7 @@ The -g or --genome parameter is mandatory, and is used to load (or construct) th
 
 # Practical 6: Pair-level filtering 
 
-fanc pairs provides a lot of parameters for filtering read pairs according to different criteria. By default, if not specified otherwise, no filtering is performed on the read pairs (passthrough). Typically, however, you will at least want to filter out unmappable (-m) and multimapping reads (-u or -us). It is also a good idea to filter by alignment quality (-q <n>). Good cutoffs for Bowtie2 and BWA are 30 and 3, respectively. If you suspect your Hi-C library to be contaminated by DNA from a different organism, you can align your original reads to a different genome and pass the resulting SAM/BAM file to the -c patameter (ensure no unmappable reads are in the file!). This will filter out all reads that have a valid alignment in the putative contaminants genome (by qname). All of the above filters operate on single reads, but will filter out the pair if either of the reads is found to be invalid due to a filtering criterion.
+fanc pairs provides a lot of parameters for filtering read pairs according to different criteria. By default, if not specified otherwise, no filtering is performed on the read pairs (passthrough). Typically, however, you will at least want to filter out unmappable (-m) and multimapping reads (-u or -us). It is also a good idea to filter by alignment quality (-q \<n\>). Good cutoffs for Bowtie2 and BWA are 30 and 3, respectively. If you suspect your Hi-C library to be contaminated by DNA from a different organism, you can align your original reads to a different genome and pass the resulting SAM/BAM file to the -c patameter (ensure no unmappable reads are in the file!). This will filter out all reads that have a valid alignment in the putative contaminants genome (by qname). All of the above filters operate on single reads, but will filter out the pair if either of the reads is found to be invalid due to a filtering criterion.
 
 (1) while minimal fanc pairs command using SAM/BAM files could look like this: (DO NOT RUN)
 
@@ -254,7 +258,13 @@ fanc pairs output/sam/SRR4271982_chr18_19_1_sort.bam \
 ls output/plots/stats/fanc_example.pairs.stats.pdf
 ```
 
-(3) An additional set of filters operates on the properties of the read pair. You may want to filter out self-ligated fragments, which provide no spatial information with the -l parameter. As Hi-C experiments generally rely on PCR amplification, it is expected to find a lot of PCR duplicates in the library. You can filter those with the -p <n> parameter, where <n> denotes the distance between the start of two alignments that would still be considered a duplicate. Normally you would use 1 or 2, but you can use higher values to be more stringent with filtering. (DO NOT RUN)
+<center>
+
+![](figures/hic_matrix_generation_figure_2.png)
+
+</center>
+
+(3) An additional set of filters operates on the properties of the read pair. You may want to filter out self-ligated fragments, which provide no spatial information with the -l parameter. As Hi-C experiments generally rely on PCR amplification, it is expected to find a lot of PCR duplicates in the library. You can filter those with the -p \<n\> parameter, where \<n\> denotes the distance between the start of two alignments that would still be considered a duplicate. Normally you would use 1 or 2, but you can use higher values to be more stringent with filtering. (DO NOT RUN)
 
 ```{r fanc_pf, eval = FALSE}
 fanc pairs output/pairs/SRR4271982_chr18_19.pairs \
@@ -263,6 +273,12 @@ fanc pairs output/pairs/SRR4271982_chr18_19.pairs \
 ```
 
 (4) You can also check how many pairs were filtered at this step by checking the statistics plots being generated in the output folder (See the plot on the right)
+
+<center>
+
+![](figures/hic_matrix_generation_figure_3.png)
+
+</center>
 
 (5) Depending on the experimental setup, it is sometimes expected to find valid Hi-C alignments near restriction sites. You can filter read pairs for their (cumulative) distance to the nearest restriction sites using the -d parameter. To determine that cutoff, or to detect any issues with the Hi-C library, you can first use the --re-dist-plot parameter. Note that this will only plot a sample of 10,000 read pairs for a quick assessment: (DO NOT RUN)
 
@@ -277,7 +293,13 @@ fanc pairs --re-dist-plot re-dist.png \
 ls output/plots/stats/fanc_example.pairs.re_dist.pdf
 ```
 
-(7) Jin et al. (2013) have identified several errors that stem from incomplete digestion and which can be identified from different types of ligation products. You can filter these using the -i <n> and -o <n> parameters, for the inward and outward ligation errors, respectively. If you need help finding a good cut-off, you may use the --ligation-error-plot parameter. (DO NOT RUN)
+<center>
+
+![](figures/hic_matrix_generation_figure_4.png)
+
+</center>
+
+(7) Jin et al. (2013) have identified several errors that stem from incomplete digestion and which can be identified from different types of ligation products. You can filter these using the -i \<n\> and -o \<n\> parameters, for the inward and outward ligation errors, respectively. If you need help finding a good cut-off, you may use the --ligation-error-plot parameter. (DO NOT RUN)
 
 ```{r fanc_ple, eval = FALSE}
 fanc pairs --ligation-error-plot ligation-err.png \
@@ -289,6 +311,12 @@ fanc pairs --ligation-error-plot ligation-err.png \
 ```{r fanc_pleo, eval = FALSE}
 ls output/plots/stats/fanc_example.pairs.ligation_error.pdf
 ```
+
+<center>
+
+![](figures/hic_matrix_generation_figure_5.png)
+
+</center>
 
 Usually 1-10kb are often reasonable cut-offs. You can also let FAN-C attempt to find suitable cut-offs based on the over-representation of certain ligation products using the --filter-ligation-auto parameter, but this is not always 100% reliable.
 
@@ -324,7 +352,7 @@ You can use the -b parameter to bin the fragment-level Hi-C matrix. You can eith
 
 fanc hic provides a few filtering options. Most likely you want to apply a coverage filter using -l to specify a coverage threshold in absolute number of pairs per bin, or -r to apply a coverage threshold based on a fraction of the median number of pairs pair bin. -a is simply a pre-set for -r 0.1.
 
-For some applications it might be useful to remove the prominent Hi-C diagonal. You can use the -d <n> parameter to remove all pairs in pixels up to a distance of n from the diagonal.
+For some applications it might be useful to remove the prominent Hi-C diagonal. You can use the -d \<n\> parameter to remove all pairs in pixels up to a distance of n from the diagonal.
 
 You can balance your Hi-C matrices using the -n parameter. By default, this applies Knight-Ruiz (KR) balancing to each chromosome. You can opt for another normalisation method using --norm-method, for example --norm-method ice for ICE balancing, or --norm-method vc for vanilla coverage normalisation (which in this case is equivalent of a single ICE iteration). We typically recommend KR balancing for performance reasons. Each chromosome in the matrix is corrected independently, unless you specify the -w option.
 
@@ -336,6 +364,11 @@ Finally, you can output the filtering statistics to a file or plot using the -s 
 ls output/plots/stats/fanc_example_*.stats.pdf
 ```
 
+<center>
+
+![](figures/hic_matrix_generation_figure_6.png)
+
+</center>
 
 # Practical 9: Quality control: Cis/trans ratio
 

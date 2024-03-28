@@ -27,6 +27,12 @@ fanc expected -p \
   architecture/expected/fanc_example_500kb_expected.txt
 ```
 
+<center>
+
+![](figures/hic_feature_analyses_figure_1.png)
+
+</center>
+
 The raw expected values are stored in fanc_example_500kb_expected.txt
 
 ``` r
@@ -80,6 +86,12 @@ fancplot \
   -vmin -2 -vmax 2
 ```
 
+<center>
+
+![](figures/hic_feature_analyses_figure_2.png)
+
+</center>
+
 4)  Which layers of genome folding do you see in this picture?
 
 # Practical 2: AB compartment analysis
@@ -118,6 +130,12 @@ fancplot \
   -vmin -0.75 -vmax 0.75 -c RdBu_r
 ```
 
+<center>
+
+![](figures/hic_feature_analyses_figure_3.png)
+
+</center>
+
 ## AB Eigenvector
 
 To translate this enhanced chess-like pattern into a 1-dimension bed
@@ -129,7 +147,7 @@ regions with positive values are assigned the ‘A’, regions with negative
 values the ‘B’ compartment.
 
 3)  To calculate the eigenvector in addition to the correlation matrix,
-    simply add the -v <file_name> option to the previous command:
+    simply add the -v \<file_name\> option to the previous command:
 
 ``` r
 fanc compartments \
@@ -153,6 +171,12 @@ fancplot \
   -p line architecture/compartments/fanc_example_1mb.ev.txt
 ```
 
+<center>
+
+![](figures/hic_feature_analyses_figure_4.png)
+
+</center>
+
 NOTE: fanc compartments outputs the first eigenvector by default. In
 some cases (like organisms with non-acrosomal chromosomes) it might be
 useful to choose a different eigenvector (sometimes the first
@@ -166,10 +190,10 @@ external information to “orient” the eigenvector, so that it most likely
 corresponds to the active and inactive compartments.
 
 Specifically, you can supply a FASTA file with the genomic sequence to
-fanc compartments using the -g <fasta_file> argument. This is generally
-a good idea: fanc compartments then calculates the average GC content of
-regions with positive and those with negative eigenvector entries. As GC
-content has previously been shown to correlate well with
+fanc compartments using the -g \<fasta_file\> argument. This is
+generally a good idea: fanc compartments then calculates the average GC
+content of regions with positive and those with negative eigenvector
+entries. As GC content has previously been shown to correlate well with
 compartmentalisation, the eigenvector is oriented in such a way that
 negative entries correspond to ‘B’ (low GC content) and positive entries
 to ‘A’ (high GC content).
@@ -186,8 +210,8 @@ fanc compartments \
 Consecutive matrix bins with the same eigenvector sign are considered
 part of a “domain”.
 
-6)  You can use the -d <domain_file> option to write the AB domains to a
-    BED file:
+6)  You can use the -d \<domain_file\> option to write the AB domains to
+    a BED file:
 
 ``` r
 fanc compartments -g hg19_chr18_19.fa \
@@ -216,8 +240,8 @@ associated eigenvector values, and then the average observed/expected
 (O/E) values of contacts in each pair of percentile bins is calculated
 and plotted.
 
-6)  Use the -e <plot_file> option to generate this plot. You can also
-    use the -m <matrix_file> option to output the enrichment matrix
+6)  Use the -e \<plot_file\> option to generate this plot. You can also
+    use the -m \<matrix_file\> option to output the enrichment matrix
     values to file for further analysis.
 
 ``` r
@@ -231,6 +255,12 @@ This process will need to specify the .hic matrix to calculate the
 enrichment of the contacts over the expected values. It is also advised
 to use a FASTA genome file to correctly orient the compartments.
 
+<center>
+
+![](figures/hic_feature_analyses_figure_5.png)
+
+</center>
+
 7)  You can customise the enrichment analysis using additional
     parameters. By default, the percentiles for eigenvector binning are
     chosen at 20, 40, 60, 80, and 100. To choose a finer binning, for
@@ -243,12 +273,18 @@ to use a FASTA genome file to correctly orient the compartments.
     differences in the number of bins plotted on the left and right side
     of the matrix.
 
+<center>
+
+![](figures/hic_feature_analyses_figure_6.png)
+
+</center>
+
 8)  Compartment stength as defined by Flyamer, Gassler, and Imakaev et.
     al 2017 (<https://pubmed.ncbi.nlm.nih.gov/28355183>) can be
-    calculated using –compartment-strength <filename>. It is defined in
-    their supplement as follows “\[In a 5x5 compartment enrichment map,
-    \] “to calculate the strength of compartment signal, we took the
-    natural logarithm of the AA \* BB / AB^2”.
+    calculated using –compartment-strength \<filename\>. It is defined
+    in their supplement as follows “\[In a 5x5 compartment enrichment
+    map, \] “to calculate the strength of compartment signal, we took
+    the natural logarithm of the AA \* BB / AB^2”.
 
 # Practical 3: PCA Analysis
 
@@ -274,6 +310,12 @@ fanc pca -n "HindIII 100k" "HindIII 5M" \
      architecture/other-hic/lowc_mboi_50k_1mb.hic \
      architecture/pca/lowc.pca
 ```
+
+<center>
+
+![](figures/hic_feature_analyses_figure_7.png)
+
+</center>
 
 By default, PCA is run on pixels across the whole genome. In the example
 above, we have restricted the analysis to chromosome 19 using the -r
@@ -301,6 +343,12 @@ fancplot \
   -m 4000000 -vmin 0 -vmax 0.05
 ```
 
+<center>
+
+![](figures/hic_feature_analyses_figure_8.png)
+
+</center>
+
 FAN-C provides multiple “scores” that are designed to find the
 boundaries between domains.
 
@@ -308,6 +356,12 @@ boundaries between domains.
 
 The insulation score (Crane et al. 2015) adds up contacts in a sliding
 diamond window along the Hi-C matrix diagonal.
+
+<center>
+
+![](figures/hic_feature_analyses_figure_9.png)
+
+</center>
 
 Regions with low score are “insulating”, i.e. regions between domains.
 Regions with high scores are most likely found inside domains.
@@ -321,6 +375,12 @@ fanc insulation output/hic/binned/fanc_example_100kb.hic \
   architecture/domains/fanc_example_100kb.insulation \
   -w 1000000 1500000 2000000 2500000 3000000 3500000 4000000
 ```
+
+<center>
+
+![](figures/hic_feature_analyses_figure_10.png)
+
+</center>
 
 2)  We can easily plot all insulation scores at the same time using
     fancplot:
@@ -372,6 +432,12 @@ fancplot --width 6 \
   -l "1mb" "2mb"
 ```
 
+<center>
+
+![](figures/hic_feature_analyses_figure_11.png)
+
+</center>
+
 By default, insulation scores are normalised to the chromosomal average
 and then log-transformed. There are plenty of normalisation and
 imputation strategies for insulation index calculations. Please refer to
@@ -409,6 +475,12 @@ fancplot --width 6 \
   -l "1mb" \
   -p bar architecture/domains/fanc_example_100kb.insulation_boundaries_1mb.bed
 ```
+
+<center>
+
+![](figures/hic_feature_analyses_figure_12.png)
+
+</center>
 
 7)  As you can see, lower minima get higher scores. By default, fanc
     boundaries outputs all minima, but you may set a threshold using
@@ -463,6 +535,12 @@ fancplot \
   -p scores architecture/domains/fanc_example_100kb.directionality
 ```
 
+<center>
+
+![](figures/hic_feature_analyses_figure_13.png)
+
+</center>
+
 ## TAD calling
 
 FAN-C does not provide a TAD calling functionality itself as there are
@@ -494,6 +572,12 @@ tadtool plot \
   chr12:31000000-33000000
 ```
 
+<center>
+
+![](figures/hic_feature_analyses_figure_14.png)
+
+</center>
+
 # Practical 5: Loop calling
 
 Loops frequently form between two genomic regions, and are visible in
@@ -506,6 +590,12 @@ fancplot \
   -p triangular architecture/loops/rao2014.chr11_77400000_78600000.hic \
   -vmin 0.0 -vmax 0.05 -m 600000
 ```
+
+<center>
+
+![](figures/hic_feature_analyses_figure_15.png)
+
+</center>
 
 We can use fanc loops to call loops in Hi-C matrices using the HICCUPS
 algorithm (Rao and Huntley et al., 2014). Please refer to the original
@@ -653,6 +743,12 @@ matrix subsets can be anywhere in the genome.
 Here are examples of TAD and loop aggregate plots from our recent
 preprint (Kruse et al. (2019)):
 
+<center>
+
+![](figures/hic_feature_analyses_figure_16.png)
+
+</center>
+
 ## Aggregate over variable width regions
 
 By default, if you provide fanc aggregate with a list of regions, it
@@ -692,6 +788,12 @@ Important: For variable sized regions, make sure to use the
 observed/expected regions by -e flag. -e works very well with
 log2-transformed data (-l).
 
+<center>
+
+![](figures/hic_feature_analyses_figure_17.png)
+
+</center>
+
 3)  This still does not look like much of a TAD, but we can add a little
     more context by expanding the plotting region relative to the region
     size using -r:
@@ -704,6 +806,12 @@ fanc aggregate output/hic/binned/fanc_example_100kb.hic \
   -m architecture/aggregate/fanc_example_100kb_oe_large.agg.txt \
   -e -l -r 1.0
 ```
+
+<center>
+
+![](figures/hic_feature_analyses_figure_18.png)
+
+</center>
 
 That plot depicts a region that is 3x the size of the TAD located in its
 center and already looks like we would expect: High signal in the
@@ -723,6 +831,12 @@ fanc aggregate output/hic/binned/fanc_example_100kb.hic \
   -m architecture/aggregate/fanc_example_100kb_oe_large.agg.txt \
   -e -r 1.0 --rescale --vmax 0.045
 ```
+
+<center>
+
+![](figures/hic_feature_analyses_figure_19.png)
+
+</center>
 
 5)  For both the log2(O/E) and rescaled versions of the aggregate
     matrices, there are pre-set flags you can use called –tads and
@@ -758,6 +872,12 @@ fanc aggregate \
   --vmin 0 --vmax 0.03
 ```
 
+<center>
+
+![](figures/hic_feature_analyses_figure_20.png)
+
+</center>
+
 7)  You can see the relatively faint “average boundary” in the centre of
     the plot. When using O/E and log2-transformed matrices, this becomes
     much more obvious:
@@ -786,6 +906,12 @@ fanc aggregate architecture/loops/rao2014.chr11_77400000_78600000.hic \
   -p architecture/aggregate/rao2014.chr11_77400000_78600000.loops_no_singlets.agg.png \
   --loops
 ```
+
+<center>
+
+![](figures/hic_feature_analyses_figure_21.png)
+
+</center>
 
 ## Disclaimer
 
