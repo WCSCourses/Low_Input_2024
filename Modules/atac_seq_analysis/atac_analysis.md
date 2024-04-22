@@ -103,6 +103,23 @@ The output of `Bowtie2` are **S**AM files, but we prefer to work with **B**AM fi
 samtools view -@ 4 -q 10 -b data/alignment/${SAMPLE}/${SAMPLE}.bam data/alignment/${SAMPLE}/${SAMPLE}.sam
 ```
 
+Finally, we sort the alignments by their genomic coordinates. Many analyses require only the subset of reads orignating from a specific genomic position, e.g. loading the alignments into a genome browser. If the data is unsorted this would require searching through all alignments everytime we move our viewing window. Instead, if the data is sorted we only need to search until the last alignment in our viewing window. 
+
+3) Sort the alignments by genomic coordinates:
+
+```bash
+sambamba sort --threads 4 -m 20G -o data/alignment/${SAMPLE}/${SAMPLE}.sorted.bam data/alignment/${SAMPLE}/${SAMPLE}.bam
+```
+
+To allow even faster access to alignments coming from random regions we need to index our BAM files. As the name suggests, this creates an index between genomic regions and the position of alignments from these regions in the BAM file. This can speed up random access by a lot and is required for many tools to work at all. The index is a separate file with the same name as your BAM file and an added `.bai` ending.
+As the index contains the correlation between genomic regiona and alignment position in the BAM file, whenever you modify the structure of the BAM file (i.e. remove alignments) you need to re-index.
+
+4) Index the sorted alignments:
+
+```bash
+samtools index -@ 4 data/alignment/${SAMPLE}/${SAMPLE}.sorted.bam data/alignment/${SAMPLE}/${SAMPLE}.sorted.bam.bai
+```
+
 # Practical 3: Filtering to remove uniformative and artefactual alignments
 
 After aligning the reads and converting them into BAM files we want to remove reads that are either uninformative or are artefacts of the library preparation and sequencing. Uninformative reads are those coming from the mitochondrial genome which is histone-free and therefore always open and usually not interesting to your research. Artefacts that arise during library preparation are PCR duplicates, as these do not give any additional information and actually bias your results towards regions that PCR-amplify more easily. Another class of duplicates are so-called optical duplicates that arise during sequencing, caused by a single cluster of fragments being interpreted as two or more separate clusters. Both types of duplicates appear the same, as alignments with exactly the same sequence, aligning to exactly the same position.
