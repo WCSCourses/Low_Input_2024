@@ -14,7 +14,7 @@ Learn the latest approaches to study chromatin biology at the gene and genome-wi
 - [Kip Arlidge](https://www.linkedin.com/in/kiparlidge/), Canadore College, Canada
 - [Kinjal Desai](https://www.linkedin.com/in/kinjal-desai-966371132/), The Hospital for Sick Children Research Institute and Cancer and Stem Cell Biology, Canada
 - Noura Maziak, MRC-LMS London, UK
-- Fabian Groll,MRC Laboratory of Medical Sciences, UK
+- Fabian Groll, The Institute of Cancer Research, UK
 - [Benjamin Hernandez Rodriguez](https://ben-hr.github.io/), Max Planck Institute for Molecular Biomedicine, Germany
 
 
