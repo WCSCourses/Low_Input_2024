@@ -77,12 +77,15 @@ arguments include specifying the genome and restriction enzymes used.
 # Practical 2: Example Hi-C matrix generation with FAN-C
 
 For this example, we are going to use the command fanc auto (see
-Generating Hi-C matrices with fanc) to construct a Hi-C map from a
-subset of a previously published adrenal tissue dataset (SRR4271982 of
-GSM2322539). For this course we have also downloaded K562 Hi-C data
-which will be analysed in practical 11 using what we learnt in this
-example. If the MiSeq sequencing for your samples has already finished
-by now, we can also analyse this data instead.
+[Generating Hi-C matrices with
+fanc](https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-generate-hic/fanc_auto.html#fanc-auto))
+to construct a Hi-C map from a subset of a previously published adrenal
+tissue dataset ([SRR4271982 of
+GSM2322539](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2322539)).
+For this course we have also downloaded K562 Hi-C data which will be
+analysed in practical 11 using what we learnt in this example. If the
+MiSeq sequencing for your samples has already finished by now, we can
+also analyse this data instead.
 
 1)  Copy example files from shared folder into working folder
 
@@ -118,8 +121,10 @@ matrices from the FASTQ input.
     from the command above. (THIS STEP WILL TAKE ~30 MINUTES.) Leave
     this process running and open a new terminal to work with in the
     meantime. You can read details about fanc auto and all of its
-    parameters in Generating Hi-C matrices with fanc. (4) fanc auto will
-    generate the following folder structure in the output folder:
+    parameters in [Generating Hi-C matrices with
+    fanc](https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-generate-hic/fanc_auto.html#fanc-auto). (4)
+    fanc auto will generate the following folder structure in the output
+    folder:
 
 ``` r
 output
@@ -165,8 +170,10 @@ This will plot the region 63-70Mb of chromosome 18 in the familiar Hi-C
 plot. Note that this dataset is very small and hence the quality of the
 matrix not particularly great - but TADs are clearly visible.
 
-2)  You can find details about the plotting executable fancplot in Basic
-    usage. Or by typing
+2)  You can find details about the plotting executable fancplot in
+    [Basic
+    usage](https://fan-c.readthedocs.io/en/latest/fancplot-executable/fancplot_basic.html#fancplot-executable).
+    Or by typing
 
 ``` r
 fancplot --help
@@ -228,7 +235,9 @@ fanc auto SRR4271982_chr18_19_1.fastq.gzip \
 
 Three major steps constitute the core of the pipeline: fanc map, fanc
 pairs and fanc hic. To (iteratively) map FASTQ files directly with
-FAN-C, use the fanc map command.
+FAN-C, use the [fanc
+map](https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-generate-hic/fanc_modular_steps.html#fanc-map-mapping-fastq-files)
+command.
 
 2)  Here is a minimal example: (DO NOT RUN)
 
@@ -304,8 +313,11 @@ number of threads to be used
 The fanc pairs command handles the creation and modification of Pairs
 objects, which represent the mate pairs in a Hi-C library mapped to
 restriction fragments. Possible inputs are: two SAM/BAM files
-(paired-end reads, sorted by read name), a HiC-Pro valid pairs file, a
-4D Nucleome pairs file, or an existing FAN-C Pairs object.
+(paired-end reads, sorted by read name), a [HiC-Pro valid pairs
+file](https://nservant.github.io/HiC-Pro/RESULTS.html#list-of-valid-interaction-products),
+a [4D Nucleome pairs
+file](https://github.com/4dn-dcic/pairix/blob/master/pairs_format_specification.md),
+or an existing FAN-C Pairs object.
 
 To process SAM/BAM files, no additional external software is required.
 However, we do recommend the installation of Sambamba, which can greatly
@@ -435,10 +447,11 @@ ls output/plots/stats/fanc_example.pairs.re_dist.pdf
 
 </center>
 
-7)  Jin et al. (2013) have identified several errors that stem from
-    incomplete digestion and which can be identified from different
-    types of ligation products. You can filter these using the -i \<n\>
-    and -o \<n\> parameters, for the inward and outward ligation errors,
+7)  [Jin et al. (2013)](https://www.nature.com/articles/nature12644)
+    have identified several errors that stem from incomplete digestion
+    and which can be identified from different types of ligation
+    products. You can filter these using the -i \<n\> and -o \<n\>
+    parameters, for the inward and outward ligation errors,
     respectively. If you need help finding a good cut-off, you may use
     the –ligation-error-plot parameter. (DO NOT RUN)
 
@@ -591,13 +604,15 @@ cooler ls output/hic/binned/fanc_example_1mb.cool
 ```
 
 Once we have transformed our data in cooler format, we can visualise it
-in HiGlass (Kerpedjiev et al., 2018), a tool able to visualise
-dynamically Hi-C data. For this course, the people at Wellcome
-Connecting Science have already kindly installed the higlass-manage tool
-for you, but if you need to install it in your own computer follow the
-instructions in <https://docs.higlass.io/tutorial.html>. If you need it
-in a server install higlass-server instead. There is a great tutorial to
-use HiGlass in
+in HiGlass ([Kerpedjiev et al.,
+2018](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-018-1486-1)),
+a tool able to visualise dynamically Hi-C data. For this course, the
+people at Wellcome Connecting Science have already kindly installed the
+higlass-manage tool for you, but if you need to install it in your own
+computer follow the instructions in
+<https://docs.higlass.io/tutorial.html>. If you need it in a server
+install [higlass-server](https://github.com/higlass/higlass-server)
+instead. There is a great tutorial to use HiGlass in
 <https://hms-dbmi.github.io/hic-data-analysis-bootcamp/#24>
 
 3)  In order to visualise our matrix in HiGlass (and if Docker ir
@@ -635,15 +650,17 @@ You can now load it using the plus sign in firefox.
 
 # Practical 11: K562 Hi-C data analysis. Setting up.
 
-We will now analyse K562 Hi-C data generated by Moquin et al 2018. This
-data is stored in the Gene Expression Database (GEO) database under the
-accession number GSE98120.At this point we have three analysis options.
-Depending on how fast we were on the first 10 exercises we will run fanc
-auto either in A. the entire K562 dataset, B. in a subset of the data
-for chromosomes 18 and 19 or C. In the libraries that were generated
-during the course. We can also split in groups that do each and compare
-results at the end. Please, modify the commands below to point to the
-correct .fastq files.
+We will now analyse K562 Hi-C data generated by [Moquin et al
+2018](https://journals.asm.org/doi/10.1128/JVI.01413-17). This data is
+stored in the Gene Expression Database (GEO) database under the
+accession number
+[GSE98120](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE98120).
+At this point we have three analysis options. Depending on how fast we
+were on the first 10 exercises we will run fanc auto either in A. the
+entire K562 dataset, B. in a subset of the data for chromosomes 18 and
+19 or C. In the libraries that were generated during the course. We can
+also split in groups that do each and compare results at the end.
+Please, modify the commands below to point to the correct .fastq files.
 
 ## Option A.
 
@@ -684,8 +701,9 @@ fastqc -o fastqc/ SRR5470534_2.fastq.gz
 
 ## Option B.
 
-The subset data for this accession number can be found in our shared
-Keeper library:<https://keeper.mpdl.mpg.de/d/9b1c1788f97642a188f3/>
+A subset of this data for this accession number can be found either in
+your Virtual Machine shared folder or online in our shared Keeper
+library: <https://keeper.mpdl.mpg.de/d/9b1c1788f97642a188f3/>
 
 1)  If not available in the shared folder, please download each subset
     .fastq file into your computer by clicking on the sample that you
@@ -760,7 +778,8 @@ fanc auto SRR4271982_chr18_19_1.fastq.gzip \
 1.  For this analysis, we switched to using the full hg38 genome instead
     of only two hg19 chromosomes. It’s always a good idea to use the
     most recent version of the genome! Please note that we additionally
-    changed the order of the chromosomes to match the negspy repository
+    changed the order of the chromosomes to match the [negspy
+    repository](https://github.com/pkerpedjiev/negspy/blob/master/negspy/data/hg38/chromInfo.txt)
     for compatibility down the line with HiGlass.
 2.  We switched to using BWA as a mapping algorithm. (In our hands this
     mapper recovers a higher proportion of aligned reads without
@@ -775,10 +794,11 @@ fanc auto SRR4271982_chr18_19_1.fastq.gzip \
     filtering. (If in doubt, thresholds between 5-10k are usually ok but
     it is important to confirm with the inward-outward plot.)
 5.  We changed the mapping quality (MAPQ) threshold needed for reads to
-    be counted as valid alignments (-q). This is because BWA and Bowtie2
-    MAPQ scores have different ranges. In our experience, -q 3 works
-    best for filtering multi-mapping reads when using BWA, while -q 30
-    works best for Bowtie2. (DO NOT RUN YET)
+    be counted as valid alignments (-q). This is because [BWA and
+    Bowtie2 MAPQ scores have different
+    ranges](https://sequencing.qcfail.com/articles/mapq-values-are-really-useful-but-their-implementation-is-a-mess/).
+    In our experience, -q 3 works best for filtering multi-mapping reads
+    when using BWA, while -q 30 works best for Bowtie2. (DO NOT RUN YET)
 
 ``` r
 GENOME='/Genomes/Homo_sapiens/UCSC/hg38/Sequence/hg38.negspy.fa'
@@ -804,7 +824,8 @@ above pipeline can be found in our shared Keeper library.
 
 IMPORTANT: For people following option A, change the number of threads
 to 4, run the command above and wait. (You can find the result files
-from running fanc in this mode already in our shared keeper library:
+from running fanc in this mode already either in your Virtual Machine
+shared folder or in our shared keeper library:
 <https://keeper.mpdl.mpg.de/d/9b1c1788f97642a188f3/>) For people
 following option B change the GENOME variable to the absolute path of
 the FASTA file (hg19_chr18_19.fa) and GENOMEIDX variable to the absolute

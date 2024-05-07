@@ -3,11 +3,15 @@ Analysing Hi-C matrices
 
 <!-- hic_feature_analyses.md is generated from hic_feature_analyses.Rmd. Please edit that file -->
 
-This tutorial assumes that you have gone through the
-hic_matrix_generation_tutorial or followed the Getting started
-instructions from the FAN-C documentation.
+This
+[tutorial](https://vaquerizaslab.github.io/fanc/fanc-executable/fanc_analyse_hic.html)
+assumes that you have gone through the [hic_matrix_generation
+tutorial](https://github.com/WCSCourses/Low_Input_2024/blob/main/Modules/hic_matrix_generation/hic_matrix_generation.md)
+or followed the [Getting started
+instructions](https://fan-c.readthedocs.io/en/latest/getting_started.html#example-fanc-auto)
+from the FAN-C documentation.
 
-# Practical 1: Distance decay of expected contact probability or P(s) curve.
+# Practical 1: [Distance decay of expected contact probability or P(s) curve](https://vaquerizaslab.github.io/fanc/fanc-executable/fanc-analyse-hic/oe.html#expected-values)
 
 The contact intensity in a Hi-C matrix gets progressively weaker the
 further apart two loci are. The expected values follow a distinctive
@@ -94,7 +98,7 @@ fancplot \
 
 4)  Which layers of genome folding do you see in this picture?
 
-# Practical 2: AB compartment analysis
+# Practical 2: [AB compartment analysis](https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/ab_compartments.html#ab-compartment-analysis)
 
 Regions in a Hi-C matrix can generally be assigned to either the active
 or the inactive compartment, also called ‘A’ and ‘B’ compartments,
@@ -279,12 +283,12 @@ to use a FASTA genome file to correctly orient the compartments.
 
 </center>
 
-8)  Compartment stength as defined by Flyamer, Gassler, and Imakaev et.
-    al 2017 (<https://pubmed.ncbi.nlm.nih.gov/28355183>) can be
-    calculated using –compartment-strength \<filename\>. It is defined
-    in their supplement as follows “\[In a 5x5 compartment enrichment
-    map, \] “to calculate the strength of compartment signal, we took
-    the natural logarithm of the AA \* BB / AB^2”.
+8)  Compartment stength as defined by [Flyamer, Gassler, and Imakaev et.
+    al 2017](https://pubmed.ncbi.nlm.nih.gov/28355183) can be calculated
+    using –compartment-strength \<filename\>. It is defined in their
+    supplement as follows “\[In a 5x5 compartment enrichment map, \] “to
+    calculate the strength of compartment signal, we took the natural
+    logarithm of the AA \* BB / AB^2”.
 
 # Practical 3: PCA Analysis
 
@@ -295,9 +299,10 @@ experimental biases and whether samples from different replicates can be
 safely merged.
 
 As an example, we ran a PCA analysis on the 1mb resolution mESC Hi-C
-matrices from our Low-C paper (Díaz et al., Nat. Comms. 2018) using
-different restriction enzymes (MboI and HindIII), as well as different
-input cell numbers.
+matrices from our [Low-C
+paper](https://www.nature.com/articles/s41467-018-06961-0)(Díaz et al.,
+Nat. Comms. 2018) using different restriction enzymes (MboI and
+HindIII), as well as different input cell numbers.
 
 ``` r
 fanc pca -n "HindIII 100k" "HindIII 5M" \
@@ -354,8 +359,9 @@ boundaries between domains.
 
 ## Insulation Score
 
-The insulation score (Crane et al. 2015) adds up contacts in a sliding
-diamond window along the Hi-C matrix diagonal.
+The insulation score ([Crane et
+al. 2015](https://www.nature.com/articles/nature14450)) adds up contacts
+in a sliding diamond window along the Hi-C matrix diagonal.
 
 <center>
 
@@ -441,7 +447,9 @@ fancplot --width 6 \
 By default, insulation scores are normalised to the chromosomal average
 and then log-transformed. There are plenty of normalisation and
 imputation strategies for insulation index calculations. Please refer to
-our Normalisation help for further details.
+our [Normalisation
+help](https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/domains.html#normalisation)
+for further details.
 
 ## Insulating boundaries (TAD boundaries)
 
@@ -503,9 +511,10 @@ thresholds across conditions.
 
 ## Directionality Index
 
-The directionality index (Dixon et al. 2012) measures the bias in
-contact frequency up- and downstream of an Hi-C region. When inside
-TADs, this measure tends towards zero, as interactions in either
+The directionality index ([Dixon et
+al. 2012](https://www.nature.com/articles/nature11082)) measures the
+bias in contact frequency up- and downstream of an Hi-C region. When
+inside TADs, this measure tends towards zero, as interactions in either
 direction are equally frequent. However, when approaching a TAD boundary
 this measure changes drastically, as one direction will remain inside
 the TAD, where there is a high contact intensity, whereas the other
@@ -545,7 +554,8 @@ fancplot \
 
 FAN-C does not provide a TAD calling functionality itself as there are
 plenty of tools available that specialise on this topic. We ourselves
-have developed a tool to call TADs called TADtool with an interactive
+have developed a tool to call TADs called
+[TADtool](https://github.com/vaquerizaslab/tadtool) with an interactive
 display for users to have the opportunity to decide on their parameters
 based on what looks appropriate visually.
 
@@ -598,13 +608,19 @@ fancplot \
 </center>
 
 We can use fanc loops to call loops in Hi-C matrices using the HICCUPS
-algorithm (Rao and Huntley et al., 2014). Please refer to the original
-paper for details on the algorithm, specifically the different types of
-local neighbourhoods defined to make loop calling robust.
+algorithm ([Rao and Huntley et al.,
+2014](https://www.cell.com/fulltext/S0092-8674(14)01497-4)). Please
+refer to the original paper for details on the algorithm, specifically
+the different types of local neighbourhoods defined to make loop calling
+robust.
 
-In FAN-C this process consists of three steps: Annotating pixels for
-loop calling Filtering annotated pixels Merging unfiltered pixels into
-loops
+In FAN-C this process consists of three steps:
+
+- Annotating pixels for loop calling
+
+- Filtering annotated pixels
+
+- Merging unfiltered pixels into loops
 
 ## Annotating pixels for loop calling
 
@@ -684,15 +700,17 @@ In addition, we highly recommend applying a filter on the minimum number
 of valid pairs in a pixel (-o), so that false-positive loops due to
 noise are avoided.
 
-For convenience, we have included the filter applied by Rao and Huntley
-et al. 2014 in their original HICCUPS algorithm as a convenient pre-set
-–rh-filter. It only retains peaks that are at least 2-fold enriched over
-either the donut or lower-left neighbourhood, at least 1.5-fold enriched
-over the horizontal and vertical neighbourhoods, at least 1.75-fold
-enriched over both the donut and lower-left neighbourhood, and have an
-FDR \<= 0.1 in every neighbourhood.
+For convenience, we have included the filter applied by [Rao and Huntley
+et al. 2014](https://www.cell.com/fulltext/S0092-8674(14)01497-4) in
+their original HICCUPS algorithm as a convenient pre-set –rh-filter. It
+only retains peaks that are at least 2-fold enriched over either the
+donut or lower-left neighbourhood, at least 1.5-fold enriched over the
+horizontal and vertical neighbourhoods, at least 1.75-fold enriched over
+both the donut and lower-left neighbourhood, and have an FDR \<= 0.1 in
+every neighbourhood.
 
-2)  Using the filters defined by Rao and Huntley et al, 2014
+2)  Using the filters defined by [Rao and Huntley et al,
+    2014](https://www.cell.com/fulltext/S0092-8674(14)01497-4)
 
 ``` r
 fanc loops \
@@ -741,7 +759,8 @@ will be located at the Hi-C matrix diagonal. For pairs of regions,
 matrix subsets can be anywhere in the genome.
 
 Here are examples of TAD and loop aggregate plots from our recent
-preprint (Kruse et al. (2019)):
+preprint ([Kruse et
+al. (2019)](https://www.biorxiv.org/content/10.1101/523712v1)):
 
 <center>
 
@@ -757,10 +776,12 @@ region and interpolate them to match the width set by –pixels (90 by
 default). It will then calculate the average value for each pixel, which
 then form the aggregate matrix.
 
-1)  Let’s try this on TADs called using the arrowhead algorithm (Rao and
-    Huntley et al., 2014). fanc aggregate will ignore all regions in the
-    file that are not present in the Hi-C matrix. In our example Hi-C
-    file, that is everything outside of chromosomes 18 and 19:
+1)  Let’s try this on TADs called using the arrowhead algorithm ([Rao
+    and Huntley et al.,
+    2014](https://doi.org/10.1016/j.cell.2014.11.021)). fanc aggregate
+    will ignore all regions in the file that are not present in the Hi-C
+    matrix. In our example Hi-C file, that is everything outside of
+    chromosomes 18 and 19:
 
 ``` r
 fanc aggregate output/hic/binned/fanc_example_100kb.hic \
@@ -842,8 +863,9 @@ fanc aggregate output/hic/binned/fanc_example_100kb.hic \
     matrices, there are pre-set flags you can use called –tads and
     –-tads-imakaev, respectively. The latter is named after the first
     author of the publication that first used rescaled aggregate
-    matrices in this fashion (Flyamer, Gassler, and Imakaev et al.,
-    2017). In the above example, you can simply run:
+    matrices in this fashion ([Flyamer, Gassler, and Imakaev et al.,
+    2017](https://www.nature.com/articles/nature21711)). In the above
+    example, you can simply run:
 
 ``` r
 fanc aggregate output/hic/binned/fanc_example_100kb.hic \
