@@ -54,7 +54,7 @@ Using 4 threads in parallel (one file per thread) `fastqc` will produce quality 
     - Do you reads have high levels of PCR duplicates?
     - Are the read contaminated with adapter sequences?
 
-To remove any problematic basecalls and other sequencing artefacts, we will run `fastp` a very-fast trimming tool. This will perform many trimming steps:
+To remove any problematic basecalls and other sequencing artefacts, we will run `fastp` a very fast trimming tool. This will perform many trimming steps:
 - Remove low quality reads
 - Trim low quality base calls from the 3' end of reads
 - Remove adapter sequences from the 3' end of reads
@@ -65,11 +65,11 @@ To remove any problematic basecalls and other sequencing artefacts, we will run 
 
 ```bash
 mkdir -p data/{trimmed,fastp}
-fastp --thread 4 --in1 <raw_data/${SAMPLE}_R1.fastq.gz> --in2 <raw_data/${SAMPLE}_R2.fastq.gz> \
-    --out1 <data/trimmed/x_R1.fastq.gz> --out2 <data/trimmed/x_R2.fastq.gz> \
+fastp --thread 4 --in1 raw_data/${SAMPLE}_1.fastq.gz --in2 raw_data/${SAMPLE}_2.fastq.gz \
+    --out1 data/trimmed/${SAMPLE}_1.fastq.gz --out2 data/trimmed/${SAMPLE}_2.fastq.gz \
     -3 --cut_tail_window_size 1 --cut_tail_mean_quality 20 \
     --low_complexity_filter --trim_poly_x --correction --detect_adapter_for_pe \
-    --json <data/fastp/${SAMPLE}.json> --html <data/fastp/${SAMPLE}.html>
+    --json data/fastp/${SAMPLE}.json --html data/fastp/${SAMPLE}.html
 ```
 
 5) Control quality after trimming with `fastqc`:
@@ -91,7 +91,7 @@ After trimming, we use `Bowtie2` to align the short reads to the genome. While `
 ```bash
 mkdir -p data/alignment/${SAMPLE}
 bowtie2 -p 4 --time \
-    -1 <data/trimmed/${SAMPLE}_R1.fastq.gz> -2 <data/trimmed/${SAMPLE}_R1.fastq.gz> -x <index> \
+    -1 data/trimmed/${SAMPLE}_1.fastq.gz -2 data/trimmed/${SAMPLE}_1.fastq.gz -x <index> \
     --maxins 2000 --no-mixed --no-discordant --no-unal > data/alignment/${SAMPLE}/${SAMPLE}.sam
 ```
 
@@ -100,7 +100,7 @@ The output of `Bowtie2` are **S**AM files, but we prefer to work with **B**AM fi
 2) Convert from SAM to BAM:
 
 ```bash
-samtools view -@ 4 -q 10 -b data/alignment/${SAMPLE}/${SAMPLE}.bam data/alignment/${SAMPLE}/${SAMPLE}.sam
+samtools view -@ 4 -q 10 -b -o data/alignment/${SAMPLE}/${SAMPLE}.bam data/alignment/${SAMPLE}/${SAMPLE}.sam
 ```
 
 Finally, we sort the alignments by their genomic coordinates. Many analyses require only the subset of reads orignating from a specific genomic position, e.g. loading the alignments into a genome browser. If the data is unsorted this would require searching through all alignments everytime we move our viewing window. Instead, if the data is sorted we only need to search until the last alignment in our viewing window. 
@@ -124,18 +124,21 @@ samtools index -@ 4 data/alignment/${SAMPLE}/${SAMPLE}.sorted.bam data/alignment
 
 After aligning the reads and converting them into BAM files we want to remove reads that are either uninformative or are artefacts of the library preparation and sequencing. Uninformative reads are those coming from the mitochondrial genome which is histone-free and therefore always open and usually not interesting to your research. Artefacts that arise during library preparation are PCR duplicates, as these do not give any additional information and actually bias your results towards regions that PCR-amplify more easily. Another class of duplicates are so-called optical duplicates that arise during sequencing, caused by a single cluster of fragments being interpreted as two or more separate clusters. Both types of duplicates appear the same, as alignments with exactly the same sequence, aligning to exactly the same position.
 
-1) Remove mitochondrial alignments by filtering based on the name of the reference sequence:
-
-```bash
-sambamba view --nthreads 4 --filter "ref_name != 'chrM'" --format bam \
-    --output-filename data/alignment/${SAMPLE}/${SAMPLE}.noM.bam data/alignment/${SAMPLE}/${SAMPLE}.bam
-```
-
-2) Mark PCR and optical duplicates:
+1) Mark PCR and optical duplicates and then remove them:
 
 ```bash
 sambamba markdup --nthreads 4 --show-progress \
-    data/alignment/${SAMPLE}/${SAMPLE}.noM.bam data/alignment/${SAMPLE}/${SAMPLE}.dupmarked.bam
+    data/alignment/${SAMPLE}/${SAMPLE}.bam data/alignment/${SAMPLE}/${SAMPLE}.dupmarked.bam
+
+sambamba view --nthreads 4 --filter "not duplicate" --format bam \
+    --output-filename data/alignment/${SAMPLE}/${SAMPLE}.noDups.bam data/alignment/${SAMPLE}/${SAMPLE}.dupmarked.bam
+```
+
+2) Remove mitochondrial alignments by filtering based on the name of the reference sequence:
+
+```bash
+sambamba view --nthreads 4 --filter "ref_name != 'chrM'" --format bam \
+    --output-filename data/alignment/${SAMPLE}/${SAMPLE}.noM.bam data/alignment/${SAMPLE}/${SAMPLE}.noDups.bam
 ```
 
 Lastly, we will remove alignment from so-called "blacklisted regions". These are regions that show extremly high signal independent of the experimental setup. For the most used model organisms (human, mouse, worm, fly) these can easily be downloaded.
@@ -143,7 +146,7 @@ Lastly, we will remove alignment from so-called "blacklisted regions". These are
 3) Remove alignments coming from blacklisted regions
 
 ```bash
-bedtools intersect -abam data/alignment/${SAMPLE}/${SAMPLE}.dupmarked.bam -b blacklist.bed -v \
+bedtools intersect -abam data/alignment/${SAMPLE}/${SAMPLE}.noM.bam -b blacklist.bed -v \
     > data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam
 ```
 
@@ -154,18 +157,22 @@ One final step that is sometimes done is to shift the alignments. Due to the mec
 One very common question for ATAC-seq data is to identify regions of open chromatin. This translates to finding regions where our reads pile up. In theory, this process is very similar to calling peaks, for example when analysing CUT&RUN data. Because of this, many people use peak callers originally developed for ChIP-seq data, with minor adaptions to make them work on ATAC-seq data. One often used peak caller is `MACS2`.  
 For this practical we will go a different route and use a tool developed specifically for ATAC-seq data, called `HMMRATAC`. It will take our alignments as input and call not only regions of open chromatin but is also able to detect the flanking nucleosomal regions.
 
-1) Create a list of chromosome sizes (needed for `HMMRATAC` to work):
+1) Before calling actual regions of open chromatin, it is highly recommended to run a cutoff analysis first. This will allow us to pick optimal values for the 3 cutoffs:
+    - `-u, --upper`: Upper limit on fold change range for choosing training sites. Should capture some extremly high enrichment and unusually wide peaks
+    - `-l, --lower`: Lower limit on fold change range for choosing training sites. Should capture moderate number of peaks with normal width
+    - `-c, --prescan-cutoff`: Fold change cutoff for prescanning candidate regions in the whole dataset. Should capture large number of possible peaks with normal width
 
 ```bash
-samtools view -H ${SAMPLE}.bam | perl -ne 'if(/^@SQ.*?SN:(\w+)\s+LN:(\d+)/){print $1,"\t",$2,"\n"}' > genome.info
+mkdir data/peaks/${SAMPLE}
+macs3 hmmratac -i data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam -n ${SAMPLE} --outdir data/peaks/${SAMPLE} --cutoff-analysis-only
 ```
 
-There are multiple ways to get this information, e.g. downloading it, or extracting it from Fasta indexes, but this approach does not require any additional data.
+Once the cutoff analysis is done, have a look at the report to determine the optimal values for `-l`, `-u` and `-c`.
 
-2) Run `HMMRATAC` on your alignments:
+2) Run `HMMRATAC` on your alignments, using the cutoffs determined:
 
 ```bash
-java -jar HMMRATAC_V1.2.4_exe.jar -b ${SAMPLE}.bam -i ${SAMPLE}.bam.bai -g genome.info
+macs3 hmmratac -i data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam -n ${SAMPLE} --outdir data/peaks/${SAMPLE} -l ${LOWER} -u ${UPPER} -c ${PRESCAN}
 ```
 
 # Practical 5: Quality control of alignments
@@ -189,17 +196,17 @@ zcat raw_data/*_1.fastq.gz | wc -l
 zcat data/trimmed/*_1.fastq.gz | wc -l
 
 # We can easily count the number of alignments with `sambamba`
-# The count directly after alignment
+# Directly after alignment
 sambamba view -c data/alignment/${SAMPLE}/${SAMPLE}.bam
 
-# The count after removing mitochondrial reads
+# After removing duplicates
+sambamba view -c data/alignment/${SAMPLE}/${SAMPLE}.noDups.bam
+
+# After removing mitochondrial reads
 sambamba view -c data/alignment/${SAMPLE}/${SAMPLE}.noM.bam
 
-# The count after removing duplicates
-sambamba view -c -F "not duplicate" data/alignment/${SAMPLE}/${SAMPLE}.dupmarked.bam
-
-# The count after removing alignments from blacklisted regions
-sambamba view -c -F "not duplicate" data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam
+# After removing alignments from blacklisted regions
+sambamba view -c data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam
 ```
 
 From the number of alignments we can calculate the library complexity as the fraction of distinct (non-duplicated) alignments / total alignments. The alignment rate will be part of the output from `Bowtie2`.
@@ -207,7 +214,7 @@ From the number of alignments we can calculate the library complexity as the fra
 2) Estimate the correlation between replicates by calculating the pairwise correlation between samples:
 
 ```bash
-multiBamSummary -p 4 bins --samFlagExclude 1024 <bamfiles> -out data/bamsummary.npz
+multiBamSummary -p 4 bins --samFlagExclude 1024 data/alignment/*/*.filtered.bam -out data/bamsummary.npz
 
 mkdir results
 
@@ -221,12 +228,12 @@ There are a range of tools that allow you to easily assess the fragment size dis
 ```bash
 mkdir -p data/ataqv
 
-ataqv --peak-file ${PEAKFILE} \
+ataqv --peak-file data/peaks/${SAMPLE}/${SAMPLE}.gappedPeaks \
     --name ${SAMPLE} \
     --metrics-file data/ataqv/${SAMPLE}.ataqv.json.gz \
     --tss-file ${TSSFILE} \
     mouse \
-    ${SAMPLE}.bam
+    data/alignment/${SAMPLE}/${SAMPLE}.dupmarked.bam
 ```
 
 4) Combine all `.json` reports into the `.html` report:
@@ -255,7 +262,7 @@ For this step we will use one of `Deeptools` many useful tools: `bamCoverage`.
 ```bash
 mkdir -p data/coverage
 
-bamCoverage -p 4 --binSize 50 \
+bamCoverage -p 4 --binSize 5 \
     --normalizeUsing CPM \
     --ignoreForNormalization chrX chrY \
     --bam ${SAMPLE}.bam -o data/coverage/${SAMPLE}.all.bw
@@ -268,7 +275,7 @@ But as you remember, depending on the size of the sequencing fragment it contain
 2) Create coverage tracks for the NFR (fragment length < 147bp):
 
 ```bash
-bamCoverage -p 4 --binSize 50 \
+bamCoverage -p 4 --binSize 5 \
     --normalizeUsing CPM \
     --ignoreForNormalization chrX chrY \
     --extendReads \
@@ -280,7 +287,7 @@ bamCoverage -p 4 --binSize 50 \
 
 
 ```bash
-bamCoverage -p 4 --binSize 50 \
+bamCoverage -p 4 --binSize 5 \
     --normalizeUsing CPM \
     --ignoreForNormalization chrX chrY \
     --extendReads \
