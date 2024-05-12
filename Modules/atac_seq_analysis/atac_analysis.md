@@ -91,7 +91,7 @@ After trimming, we use `Bowtie2` to align the short reads to the genome. While `
 ```bash
 mkdir -p data/alignment/${SAMPLE}
 bowtie2 -p 4 --time \
-    -1 data/trimmed/${SAMPLE}_1.fastq.gz -2 data/trimmed/${SAMPLE}_1.fastq.gz -x <index> \
+    -1 data/trimmed/${SAMPLE}_1.fastq.gz -2 data/trimmed/${SAMPLE}_2.fastq.gz -x GRCm38_index/GRCm38_index \
     --maxins 2000 --no-mixed --no-discordant --no-unal > data/alignment/${SAMPLE}/${SAMPLE}.sam
 ```
 
