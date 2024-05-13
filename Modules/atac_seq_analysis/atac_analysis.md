@@ -108,7 +108,7 @@ Finally, we sort the alignments by their genomic coordinates. Many analyses requ
 3) Sort the alignments by genomic coordinates:
 
 ```bash
-sambamba sort --threads 4 -m 20G -o data/alignment/${SAMPLE}/${SAMPLE}.sorted.bam data/alignment/${SAMPLE}/${SAMPLE}.bam
+sambamba sort --threads 4 -m 2G -o data/alignment/${SAMPLE}/${SAMPLE}.sorted.bam data/alignment/${SAMPLE}/${SAMPLE}.bam
 ```
 
 To allow even faster access to alignments coming from random regions we need to index our BAM files. As the name suggests, this creates an index between genomic regions and the position of alignments from these regions in the BAM file. This can speed up random access by a lot and is required for many tools to work at all. The index is a separate file with the same name as your BAM file and an added `.bai` ending.
@@ -152,30 +152,7 @@ bedtools intersect -abam data/alignment/${SAMPLE}/${SAMPLE}.noM.bam -b blacklist
 
 One final step that is sometimes done is to shift the alignments. Due to the mechanisms by which the Tn5 transpose insert the sequencing adaptors the ends of the sequencing fragments are shifted by 9bp. To center the ends of the alignemnts on the center of the Tn5 binding site, reads need to be shifted by 5/-4bp. But for most analysis this nucleotide resolution is not necessary.
 
-# Practical 4: Calling regions of open chromatin (and nucleosomes)
-
-One very common question for ATAC-seq data is to identify regions of open chromatin. This translates to finding regions where our reads pile up. In theory, this process is very similar to calling peaks, for example when analysing CUT&RUN data. Because of this, many people use peak callers originally developed for ChIP-seq data, with minor adaptions to make them work on ATAC-seq data. One often used peak caller is `MACS2`.  
-For this practical we will go a different route and use a tool developed specifically for ATAC-seq data, called `HMMRATAC`. It will take our alignments as input and call not only regions of open chromatin but is also able to detect the flanking nucleosomal regions.
-
-1) Before calling actual regions of open chromatin, it is highly recommended to run a cutoff analysis first. This will allow us to pick optimal values for the 3 cutoffs:
-    - `-u, --upper`: Upper limit on fold change range for choosing training sites. Should capture some extremly high enrichment and unusually wide peaks
-    - `-l, --lower`: Lower limit on fold change range for choosing training sites. Should capture moderate number of peaks with normal width
-    - `-c, --prescan-cutoff`: Fold change cutoff for prescanning candidate regions in the whole dataset. Should capture large number of possible peaks with normal width
-
-```bash
-mkdir data/peaks/${SAMPLE}
-macs3 hmmratac -i data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam -n ${SAMPLE} --outdir data/peaks/${SAMPLE} --cutoff-analysis-only
-```
-
-Once the cutoff analysis is done, have a look at the report to determine the optimal values for `-l`, `-u` and `-c`.
-
-2) Run `HMMRATAC` on your alignments, using the cutoffs determined:
-
-```bash
-macs3 hmmratac -i data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam -n ${SAMPLE} --outdir data/peaks/${SAMPLE} -l ${LOWER} -u ${UPPER} -c ${PRESCAN}
-```
-
-# Practical 5: Quality control of alignments
+# Practical 4: Quality control of alignments
 
 With our alignments being filtered, we can now assess some additional quality metrics. This includes things like:
 - Number of non-duplicate, non-mitochondrial aligned fragments
@@ -228,12 +205,11 @@ There are a range of tools that allow you to easily assess the fragment size dis
 ```bash
 mkdir -p data/ataqv
 
-ataqv --peak-file data/peaks/${SAMPLE}/${SAMPLE}.gappedPeaks \
-    --name ${SAMPLE} \
+ataqv --name ${SAMPLE} \
     --metrics-file data/ataqv/${SAMPLE}.ataqv.json.gz \
     --tss-file ${TSSFILE} \
     mouse \
-    data/alignment/${SAMPLE}/${SAMPLE}.dupmarked.bam
+    data/alignment/${SAMPLE}/${SAMPLE}.dupmarked.sorted.bam
 ```
 
 4) Combine all `.json` reports into the `.html` report:
@@ -248,7 +224,7 @@ mkarv results/ataqv_report data/ataqv/*
 xdg-open results/ataqv_report/index.html
 ```
 
-# Practical 6: Converting alignments into coverage tracks for visualization
+# Practical 5: Converting alignments into coverage tracks for visualization
 
 With all basic analysis steps done and after having checked the quality of our data we can finally have a look at our data in a genome browser. For this we could use the final BAM files, but this has 2 big drawbacks:
 - BAM files tend to contain a lot of information not needed for visualising the signal, making the files quite big
@@ -297,3 +273,26 @@ bamCoverage -p 4 --binSize 5 \
 ```
 
 4) Visualize your coverage tracks in the genome browser, together with the regions of open chromatin you called before.
+
+# Practical 6: Calling regions of open chromatin (and nucleosomes)
+
+One very common question for ATAC-seq data is to identify regions of open chromatin. This translates to finding regions where our reads pile up. In theory, this process is very similar to calling peaks, for example when analysing CUT&RUN data. Because of this, many people use peak callers originally developed for ChIP-seq data, with minor adaptions to make them work on ATAC-seq data. One often used peak caller is `MACS2`.  
+For this practical we will go a different route and use a tool developed specifically for ATAC-seq data, called `HMMRATAC`. It will take our alignments as input and call not only regions of open chromatin but is also able to detect the flanking nucleosomal regions.
+
+1) Before calling actual regions of open chromatin, it is highly recommended to run a cutoff analysis first. This will allow us to pick optimal values for the 3 cutoffs:
+    - `-u, --upper`: Upper limit on fold change range for choosing training sites. Should capture some extremly high enrichment and unusually wide peaks
+    - `-l, --lower`: Lower limit on fold change range for choosing training sites. Should capture moderate number of peaks with normal width
+    - `-c, --prescan-cutoff`: Fold change cutoff for prescanning candidate regions in the whole dataset. Should capture large number of possible peaks with normal width
+
+```bash
+mkdir data/peaks/${SAMPLE}
+macs3 hmmratac -i data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam -n ${SAMPLE} --outdir data/peaks/${SAMPLE} --cutoff-analysis-only
+```
+
+Once the cutoff analysis is done, have a look at the report to determine the optimal values for `-l`, `-u` and `-c`.
+
+2) Run `HMMRATAC` on your alignments, using the cutoffs determined:
+
+```bash
+macs3 hmmratac -i data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam -n ${SAMPLE} --outdir data/peaks/${SAMPLE} -l ${LOWER} -u ${UPPER} -c ${PRESCAN}
+```
