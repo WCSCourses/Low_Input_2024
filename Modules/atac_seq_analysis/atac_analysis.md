@@ -241,7 +241,7 @@ mkdir -p data/coverage
 bamCoverage -p 4 --binSize 5 \
     --normalizeUsing CPM \
     --ignoreForNormalization chrX chrY \
-    --bam data/alignment/${SAMPLE}.filtered.sorted.bam -o data/coverage/${SAMPLE}.all.bw
+    --bam data/alignment/${SAMPLE}/${SAMPLE}.filtered.sorted.bam -o data/coverage/${SAMPLE}.all.bw
 ```
 
 This will create coverage tracks of all alignments, summarising the signal into bins of 50bp and normalising it using **C**ounts **P**er **M**illion (CPM). With this normalisation strategy, a signal of 1 means you would expect to find 1 alignment at this position for every 1 Million alignments in your sample.
@@ -256,7 +256,7 @@ bamCoverage -p 4 --binSize 5 \
     --ignoreForNormalization chrX chrY \
     --extendReads \
     --maxFragmentLength 135 \
-    --bam data/alignment/${SAMPLE}.filtered.sorted.bam -o data/coverage/${SAMPLE}.nfr.bw
+    --bam data/alignment/${SAMPLE}/${SAMPLE}.filtered.sorted.bam -o data/coverage/${SAMPLE}.nfr.bw
 ```
 
 3) Create coverage tracks for mono-nucleosomal regions (147bp < fragment length < 294 bp):
@@ -269,7 +269,7 @@ bamCoverage -p 4 --binSize 5 \
     --extendReads \
     --minFragmentLength 150 \
     --maxFragmentLength 290 \
-    --bam data/alignment/${SAMPLE}.filtered.sorted.bam -o data/coverage/${SAMPLE}.mono.bw
+    --bam data/alignment/${SAMPLE}/${SAMPLE}.filtered.sorted.bam -o data/coverage/${SAMPLE}.mono.bw
 ```
 
 4) Visualize your coverage tracks in the genome browser, together with the regions of open chromatin you called before.
