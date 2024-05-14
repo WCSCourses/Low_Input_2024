@@ -19,7 +19,7 @@ profile with distance for Hi-C matrices, which can be approximated by a
 power law and forms an almost straight line in a log-log plot.
 
 1)  To calculate the expected values of any FAN-C compatible matrix, you
-    can use the fanc expected command on juicer, cooler or fan-c
+    can use the `fanc expected` command on juicer, cooler or fan-c
     matrices:
 
 ``` r
@@ -37,7 +37,7 @@ fanc expected -p \
 
 </center>
 
-The raw expected values are stored in fanc_example_500kb_expected.txt
+The raw expected values are stored in `fanc_example_500kb_expected.txt`
 
 ``` r
       less architecture/expected/fanc_example_500kb_expected.txt 
@@ -54,13 +54,13 @@ The raw expected values are stored in fanc_example_500kb_expected.txt
       ...
 ```
 
-It is advisable to run the fanc expected command before the steps below
-so that the calculated values are stored in the .hic object for future
-reference. Expected contact frequencies away from the diagonal will be
-contrasted with the observed values at each position to estimate
-enrichments over background. Use –recalculate to force a re-calculation
-of expected values, for whatever reason. Use -N to plot the
-un-normalised expected values.
+It is advisable to run the `fanc expected` command before the steps
+below so that the calculated values are stored in the `.hic` object for
+future reference. Expected contact frequencies away from the diagonal
+will be contrasted with the observed values at each position to estimate
+enrichments over background. Use `--recalculate` to force a
+re-calculation of expected values, for whatever reason. Use `-N` to plot
+the un-normalised expected values.
 
 2)  We can calculate the expected value of multiple matrices at the same
     time in this way:
@@ -100,17 +100,19 @@ fancplot \
 
 # Practical 2: [AB compartment analysis](https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/ab_compartments.html#ab-compartment-analysis)
 
-Regions in a Hi-C matrix can generally be assigned to either the active
-or the inactive compartment, also called ‘A’ and ‘B’ compartments,
-respectively. The traditional way of calling compartments aims to
-enhance the plaid or chess-like pattern in the Hi-C matrix to identify
-regions that interact in similar ways to each other. Correlation matrix
+Regions in a Hi-C matrix can generally be assigned to either the
+‘active’ or the ‘inactive’ compartment, also called ‘A’ and ‘B’
+compartments, respectively. The traditional way of calling compartments
+aims to enhance the plaid or chess-like pattern in the Hi-C matrix to
+identify regions that interact in similar ways to each other.
+
+## Correlation matrix
 
 This is first achieved by calculating an (auto) correlation matrix in
-which each entry i, j corresponds to the Pearson correlation between row
-i and column j of the Hi-C matrix.
+which each entry `i`,`j` corresponds to the Pearson correlation between
+row `i` and column `j` of the Hi-C matrix.
 
-1)  The fanc compartments command can produce a correlation matrix (AB
+1)  The `fanc compartments` command can produce a correlation matrix (AB
     compartment object) from a FAN-C matrix file. Example:
 
 ``` r
@@ -122,9 +124,9 @@ fanc compartments \
 By default, compartment matrices are calculated on a per-chromosome
 basis, since each chromosome might be normalised differently and is hard
 to estimate expected values inter-chromosomally. To force the AB
-calculation on the whole genome, use the -w option.
+calculation on the whole genome, use the `-w` option.
 
-2)  We can easily plot the correlation matrix using the fancplot
+2)  We can easily plot the correlation matrix using the `fancplot`
     command:
 
 ``` r
@@ -151,7 +153,7 @@ regions with positive values are assigned the ‘A’, regions with negative
 values the ‘B’ compartment.
 
 3)  To calculate the eigenvector in addition to the correlation matrix,
-    simply add the -v \<file_name\> option to the previous command:
+    simply add the `-v <file_name>` option to the previous command:
 
 ``` r
 fanc compartments \
@@ -160,9 +162,9 @@ fanc compartments \
   architecture/compartments/fanc_example_1mb.ab
 ```
 
-If architecture/compartments/fanc_example_1mb.ab already exists, it will
-not be recalculated but the matrix is loaded from file. You can use the
--f option to overwrite the existing file in any case.
+If `architecture/compartments/fanc_example_1mb.ab` already exists, it
+will not be recalculated but the matrix is loaded from file. You can use
+the `-f` option to overwrite the existing file in any case.
 
 4)  We can plot the eigenvector using fancplot:
 
@@ -181,20 +183,22 @@ fancplot \
 
 </center>
 
-NOTE: fanc compartments outputs the first eigenvector by default. In
+NOTE: `fanc compartments` outputs the first eigenvector by default. In
 some cases (like organisms with non-acrosomal chromosomes) it might be
 useful to choose a different eigenvector (sometimes the first
 eigenvector identifies chromosomal arms rather than compartments). To
-change the eigenvector use the -i option, e.g. -i 2 to keep the second
-instead of the first correlation matrix eigenvector. (5) The sign of the
-eigenvector does not necessarily correspond well to the A or B
-compartment. Often, the eigenvector is “flipped” (inverted signs on its
-entries). Mathematically, if x is an eigenvector, so is -x. You can use
-external information to “orient” the eigenvector, so that it most likely
-corresponds to the active and inactive compartments.
+change the eigenvector use the `-i` option, e.g. `-i 2` to keep the
+second instead of the first correlation matrix eigenvector.
 
-Specifically, you can supply a FASTA file with the genomic sequence to
-fanc compartments using the -g \<fasta_file\> argument. This is
+5)  The sign of the eigenvector does not necessarily correspond well to
+    the A or B compartment. Often, the eigenvector is “flipped”
+    (inverted signs on its entries). Mathematically, if `x` is an
+    eigenvector, so is `-x`. You can use external information to
+    “orient” the eigenvector, so that it most likely corresponds to the
+    active and inactive compartments.
+
+Specifically, you can supply a `FASTA` file with the genomic sequence to
+fanc compartments using the `-g <fasta_file>` argument. This is
 generally a good idea: fanc compartments then calculates the average GC
 content of regions with positive and those with negative eigenvector
 entries. As GC content has previously been shown to correlate well with
@@ -214,8 +218,8 @@ fanc compartments \
 Consecutive matrix bins with the same eigenvector sign are considered
 part of a “domain”.
 
-6)  You can use the -d \<domain_file\> option to write the AB domains to
-    a BED file:
+6)  You can use the `-d <domain_file>` option to write the AB domains to
+    a `BED` file:
 
 ``` r
 fanc compartments -g hg19_chr18_19.fa \
@@ -223,7 +227,7 @@ fanc compartments -g hg19_chr18_19.fa \
   architecture/compartments/fanc_example_1mb.ab
 ```
 
-The domains BED file merges all consecutive bins in the same domain,
+The domains `BED` file merges all consecutive bins in the same domain,
 which is why A and B are always alternating. It contains the domain type
 in the “name” field and the average eigenvector entry values of all bins
 in the domain in the “score” field:
@@ -244,8 +248,8 @@ associated eigenvector values, and then the average observed/expected
 (O/E) values of contacts in each pair of percentile bins is calculated
 and plotted.
 
-6)  Use the -e \<plot_file\> option to generate this plot. You can also
-    use the -m \<matrix_file\> option to output the enrichment matrix
+6)  Use the `-e <plot_file>` option to generate this plot. You can also
+    use the `-m <matrix_file>` option to output the enrichment matrix
     values to file for further analysis.
 
 ``` r
@@ -255,9 +259,9 @@ fanc compartments -g hg19_chr18_19.fa \
   architecture/compartments/fanc_example_1mb.ab
 ```
 
-This process will need to specify the .hic matrix to calculate the
+This process will need to specify the `.hic` matrix to calculate the
 enrichment of the contacts over the expected values. It is also advised
-to use a FASTA genome file to correctly orient the compartments.
+to use a `FASTA` genome file to correctly orient the compartments.
 
 <center>
 
@@ -268,12 +272,12 @@ to use a FASTA genome file to correctly orient the compartments.
 7)  You can customise the enrichment analysis using additional
     parameters. By default, the percentiles for eigenvector binning are
     chosen at 20, 40, 60, 80, and 100. To choose a finer binning, for
-    example, you can use -p 10 20 30 40 50 60 70 80 90 100. The “0”
+    example, you can use `-p 10 20 30 40 50 60 70 80 90 100`. The “0”
     percentile is always added automatically. The eigenvector values are
     not necessarily centred around 0, which can lead to some unexpected
     enrichment plots. To force the central enrichment matrix bin to 0,
     and perform separate percentile calculations for values \< 0 and \>=
-    0, use the -s 0 option. Note, however, that this will lead to
+    0, use the `-s 0` option. Note, however, that this will lead to
     differences in the number of bins plotted on the left and right side
     of the matrix.
 
@@ -285,7 +289,7 @@ to use a FASTA genome file to correctly orient the compartments.
 
 8)  Compartment stength as defined by [Flyamer, Gassler, and Imakaev et.
     al 2017](https://pubmed.ncbi.nlm.nih.gov/28355183) can be calculated
-    using –compartment-strength \<filename\>. It is defined in their
+    using `--compartment-strength <filename>`. It is defined in their
     supplement as follows “\[In a 5x5 compartment enrichment map, \] “to
     calculate the strength of compartment signal, we took the natural
     logarithm of the AA \* BB / AB^2”.
@@ -323,17 +327,18 @@ fanc pca -n "HindIII 100k" "HindIII 5M" \
 </center>
 
 By default, PCA is run on pixels across the whole genome. In the example
-above, we have restricted the analysis to chromosome 19 using the -r
-chr19 argument. -Z instructs fanc pca to use only non-zero matrix
+above, we have restricted the analysis to chromosome 19 using the
+`-r chr19` argument. `-Z` instructs fanc pca to use only non-zero matrix
 entries for the PCA - this can help mitigate the effect of very weak
 contacts on the variability.
 
 Is run by default on the s most variable pixels in the Hi-C matrix. You
-can change which pixels get used for the PCA by changing –strategy
-fold-change to choose contacts with the largest fold-change or –strategy
-passthrough to make no prior selection of contacts. If you only want to
-include contacts up to (or above a) a certain distance, you can specify
-that distance using the –max-distance (or min-distance) option.
+can change which pixels get used for the PCA by changing
+`--strategy fold-change` to choose contacts with the largest fold-change
+or `--strategy passthrough` to make no prior selection of contacts. If
+you only want to include contacts up to (or above a) a certain distance,
+you can specify that distance using the `--max-distance` (or
+`--min-distance`) option.
 
 # Practical 4: TAD boundaries and TADs
 
@@ -372,7 +377,7 @@ in a sliding diamond window along the Hi-C matrix diagonal.
 Regions with low score are “insulating”, i.e. regions between domains.
 Regions with high scores are most likely found inside domains.
 
-1)  fanc insulation is typically used to calculate insulation scores
+1)  `fanc insulation` is typically used to calculate insulation scores
     with multiple window sizes at the same time, as a single window size
     might be prone to local matrix differences:
 
@@ -389,7 +394,7 @@ fanc insulation output/hic/binned/fanc_example_100kb.hic \
 </center>
 
 2)  We can easily plot all insulation scores at the same time using
-    fancplot:
+    `fancplot`:
 
 ``` r
 fancplot \
@@ -400,8 +405,8 @@ fancplot \
   -p scores architecture/domains/fanc_example_100kb.insulation
 ```
 
-3)  We can additionally obtain .bed files, .gff files or .bigwig files
-    for display in other genome browsers:
+3)  We can additionally obtain `.bed` files, `.gff` files or `.bigwig`
+    files for display in other genome browsers:
 
 ``` r
 fanc insulation output/hic/binned/fanc_example_100kb.hic \
@@ -492,7 +497,8 @@ fancplot --width 6 \
 
 7)  As you can see, lower minima get higher scores. By default, fanc
     boundaries outputs all minima, but you may set a threshold using
-    –min-score s to report only boundaries with scores greater than s.
+    `--min-score <s>` to report only boundaries with scores greater than
+    `s`.
 
 ``` r
 fanc boundaries \
@@ -520,10 +526,10 @@ this measure changes drastically, as one direction will remain inside
 the TAD, where there is a high contact intensity, whereas the other
 direction will lie in a low intensity region outside the TAD.
 
-8)  fanc directionality is very similar in syntax to fanc insulation. It
-    is typically used to calculate directionality indexes with multiple
-    window sizes at the same time, as a single window size might be
-    prone to local matrix differences:
+8)  `fanc directionality` is very similar in syntax to
+    `fanc insulation`. It is typically used to calculate directionality
+    indexes with multiple window sizes at the same time, as a single
+    window size might be prone to local matrix differences:
 
 ``` r
 fanc directionality \
@@ -555,7 +561,7 @@ fancplot \
 FAN-C does not provide a TAD calling functionality itself as there are
 plenty of tools available that specialise on this topic. We ourselves
 have developed a tool to call TADs called
-[TADtool](https://github.com/vaquerizaslab/tadtool) with an interactive
+[tadtool](https://github.com/vaquerizaslab/tadtool) with an interactive
 display for users to have the opportunity to decide on their parameters
 based on what looks appropriate visually.
 
@@ -566,16 +572,18 @@ TAD calls or TADs called with multiple parameter combinations with a
 quantitative annotation of TAD strength.
 
 10) To explore what’s is the effect of different parameters on TAD
-    calling usinf TADtool we can use this example:
+    calling using tadtool we can use this example:
 
 ``` r
-# Installing TADtool and obtaining example data      git clone https://github.com/vaquerizaslab/tadtool.git
+# Installing TADtool
+git clone https://github.com/vaquerizaslab/tadtool.git
 cd tadtool
-python setup.py install      tadtool –help
+python setup.py install
+tadtool –help
 ```
 
 ``` r
-# Example 
+# Example locus
 tadtool plot \
   examples/chr12_20-35Mb.matrix.txt \
   examples/chr12_20-35Mb_regions.bed \
@@ -607,7 +615,7 @@ fancplot \
 
 </center>
 
-We can use fanc loops to call loops in Hi-C matrices using the HICCUPS
+We can use `fanc loops` to call loops in Hi-C matrices using the HICCUPS
 algorithm ([Rao and Huntley et al.,
 2014](https://www.cell.com/fulltext/S0092-8674(14)01497-4)). Please
 refer to the original paper for details on the algorithm, specifically
@@ -638,26 +646,26 @@ fanc loops \
 ```
 
 This is the most computationally expensive step. We recommend large
-number of threads using the -t option. If you have access to a
+number of threads using the `-t` option. If you have access to a
 computational cluster running Sun/Oracle Grid Engine, you can take
-advantage of it by automatic job submission setting the –sge flag.
+advantage of it by automatic job submission setting the `--sge` flag.
 
-By default, fanc loops assumes a loop size of 25kb. This determines the
-area around a pixel that is not included in the local neighbourhood
+By default, `fanc loops` assumes a loop size of 25kb. This determines
+the area around a pixel that is not included in the local neighbourhood
 calculations. If this is chosen too small, the neighbourhood will lie
 within the peak region, and enrichments are going to be lower. If this
 is chosen too big, the neighbourhood will no longer be local. If you
 have reason to believe your loops size differs from the default, you can
-set it explicitly with -p.
+set it explicitly with `-p`.
 
-Similarly, the width of the neighbourhood is determined as p + 3 by
+Similarly, the width of the neighbourhood is determined as `p + 3` by
 default. If you want to in- or decrease the neighbourhood width, use the
--w parameter. You should know, however, that this is just a starting
+`-w` parameter. You should know, however, that this is just a starting
 value, and the neighbourhood width might be increased on demand
 internally.
 
 Finally, you can control the size of the submatrices sent to each thread
-using the –batch-size parameter. The default, 200, should suit most
+using the `--batch-size` parameter. The default, 200, should suit most
 purposes, but if your individual jobs are taking too long, you should
 reduce this number.
 
@@ -673,37 +681,39 @@ Additionally, there are filters for minimum distance between regions,
 and the minimum number of unnormalised valid pairs in a pixel.
 
 You can either set a global enrichment filter that acts on all
-neighbourhoods using -e, or choose individual thresholds for each local
-neighbourhood with –enrichment-donut, –enrichment-vertical,
-–enrichment-horizontal, and –enrichment-lower-left. You usually want to
-set at least the –enrichment-donut cut-off to something like 2.
+neighbourhoods using `-e`, or choose individual thresholds for each
+local neighbourhood with `--enrichment-donut`, `--enrichment-vertical`,
+`--enrichment-horizontal`, and `--enrichment-lower-left`. You usually
+want to set at least the `--enrichment-donut` cut-off to something like
+2.
 
 For FDR values, also called q-values, you can set a global filter using
--q. Control the filtering of individual neighbourhoods using –fdr-donut,
-–fdr-vertical, –fdr-horizontal, and –fdr-lower-left. Typical values for
-each neighbourhood are around 0.1.
+`-q`. Control the filtering of individual neighbourhoods using
+`--fdr-donut`, `--fdr-vertical`, `--fdr-horizontal`, and
+`--fdr-lower-left`. Typical values for each neighbourhood are around
+0.1.
 
 Mappability filters act on pixels where a certain fraction of pixels in
 their local neighbourhoods is unmappable. To set a global mappability
-cut-off for all neighbourhoods, use the -m option. Again, local
+cut-off for all neighbourhoods, use the `-m` option. Again, local
 neighbourhood mappability filters can be fine-tuned using the
-–mappability-donut, –mappability-vertical, –mappability-horizontal, and
-–mappability-lower-left options.
+`--mappability-donut`, `--mappability-vertical`,
+`--mappability-horizontal`, and `--mappability-lower-left` options.
 
 It is generally a good idea to filter on the minimum distance between
 regions to consider forming a loop, as a lot of false positive loops
-will be close to the diagonal. You can use the -d b parameter to set a
-threshold on the minimum distance, where b is expressed in number of
+will be close to the diagonal. You can use the `-d <b>` parameter to set
+a threshold on the minimum distance, where b is expressed in number of
 bins.
 
 In addition, we highly recommend applying a filter on the minimum number
-of valid pairs in a pixel (-o), so that false-positive loops due to
+of valid pairs in a pixel (`-o`), so that false-positive loops due to
 noise are avoided.
 
 For convenience, we have included the filter applied by [Rao and Huntley
 et al. 2014](https://www.cell.com/fulltext/S0092-8674(14)01497-4) in
-their original HICCUPS algorithm as a convenient pre-set –rh-filter. It
-only retains peaks that are at least 2-fold enriched over either the
+their original HICCUPS algorithm as a convenient pre-set `--rh-filter`.
+It only retains peaks that are at least 2-fold enriched over either the
 donut or lower-left neighbourhood, at least 1.5-fold enriched over the
 horizontal and vertical neighbourhoods, at least 1.75-fold enriched over
 both the donut and lower-left neighbourhood, and have an FDR \<= 0.1 in
@@ -724,7 +734,7 @@ fanc loops \
 3)  Pixels that pass all filtering steps are good candidates for loops.
     Often, these pixels appear in clusters, which we merge/join in this
     step. Pixels that do not form a cluster are generally
-    false-positives, so we filter them using –remove-singlets.
+    false-positives, so we filter them using `--remove-singlets`.
 
 ``` r
 fanc loops \
@@ -733,7 +743,8 @@ fanc loops \
   -j --remove-singlets
 ```
 
-4)  Finally, we can export all the merged loops to BEDPE using -b:
+4)  Finally, we can export all the merged loops to `BEDPE` format using
+    `-b`:
 
 ``` r
 fanc loops \
@@ -751,16 +762,16 @@ enhancers, etc. One can aggregate the 2D matrix Hi-C signal over
 multiple regions of the genome in order to visualise the aggregate
 change of a series of regions together.
 
-This can be done on paired coordinates such as those stored in BEDPE
+This can be done on paired coordinates such as those stored in `BEDPE`
 format, like enhancer-promoter loops, Hi-C peaks, etc. Or it can also be
-done on lists of 1D regions like those in BED files: TAD boundaries,
+done on lists of 1D regions like those in `BED` files: TAD boundaries,
 Enhancers, Promoters, etc. For lists of regions, the aggregate matrix
 will be located at the Hi-C matrix diagonal. For pairs of regions,
 matrix subsets can be anywhere in the genome.
 
-Here are examples of TAD and loop aggregate plots from our recent
-preprint ([Kruse et
-al. (2019)](https://www.biorxiv.org/content/10.1101/523712v1)):
+Here are examples of TAD and loop aggregate plots from a preprint from
+the lab ([Kruse et
+al. 2019](https://www.biorxiv.org/content/10.1101/523712v1)):
 
 <center>
 
@@ -772,13 +783,13 @@ al. (2019)](https://www.biorxiv.org/content/10.1101/523712v1)):
 
 By default, if you provide fanc aggregate with a list of regions, it
 will extract the square Hi-C sub-matrices along the diagonal for each
-region and interpolate them to match the width set by –pixels (90 by
+region and interpolate them to match the width set by `--pixels` (90 by
 default). It will then calculate the average value for each pixel, which
 then form the aggregate matrix.
 
 1)  Let’s try this on TADs called using the arrowhead algorithm ([Rao
     and Huntley et al.,
-    2014](https://doi.org/10.1016/j.cell.2014.11.021)). fanc aggregate
+    2014](https://doi.org/10.1016/j.cell.2014.11.021)). `fanc aggregate`
     will ignore all regions in the file that are not present in the Hi-C
     matrix. In our example Hi-C file, that is everything outside of
     chromosomes 18 and 19:
@@ -789,12 +800,12 @@ fanc aggregate output/hic/binned/fanc_example_100kb.hic \
   architecture/aggregate/fanc_example_100kb.agg
 ```
 
-This command only produces an AggregateMatrix file
-(fanc_example_100kb.agg), which is useful for further usage with FAN-C,
-but not easily readable.
+This command only produces an `AggregateMatrix` file
+(`fanc_example_100kb.agg`), which is useful for further usage with
+FAN-C, but not easily readable.
 
-2)  To extract the aggregate matrix in .txt format, simply add -m and to
-    plot it just use -p:
+2)  To extract the aggregate matrix in `.txt` format, simply add `-m`
+    and to plot it just use `-p`:
 
 ``` r
 fanc aggregate output/hic/binned/fanc_example_100kb.hic \
@@ -806,8 +817,8 @@ fanc aggregate output/hic/binned/fanc_example_100kb.hic \
 ```
 
 Important: For variable sized regions, make sure to use the
-observed/expected regions by -e flag. -e works very well with
-log2-transformed data (-l).
+observed/expected regions by `-e` flag. `-e` works very well with
+log2-transformed data (`-l`).
 
 <center>
 
@@ -817,7 +828,7 @@ log2-transformed data (-l).
 
 3)  This still does not look like much of a TAD, but we can add a little
     more context by expanding the plotting region relative to the region
-    size using -r:
+    size using `-r`:
 
 ``` r
 fanc aggregate output/hic/binned/fanc_example_100kb.hic \
@@ -839,10 +850,10 @@ center and already looks like we would expect: High signal in the
 center, especially at the TAD corner, where the corner loops are
 typically located.
 
-4)  We can further apply an exponential rescaling (–rescale) of the data
-    to make this look more like a Hi-C matrix. Here, we are not
+4)  We can further apply an exponential rescaling (`--rescale`) of the
+    data to make this look more like a Hi-C matrix. Here, we are not
     log-transforming the data and we are setting the saturation of the
-    pixel values at 0.045 using –vmax.
+    pixel values at 0.045 using `--vmax`.
 
 ``` r
 fanc aggregate output/hic/binned/fanc_example_100kb.hic \
@@ -860,8 +871,8 @@ fanc aggregate output/hic/binned/fanc_example_100kb.hic \
 </center>
 
 5)  For both the log2(O/E) and rescaled versions of the aggregate
-    matrices, there are pre-set flags you can use called –tads and
-    –-tads-imakaev, respectively. The latter is named after the first
+    matrices, there are pre-set flags you can use called `--tads` and
+    `–-tads-imakaev`, respectively. The latter is named after the first
     author of the publication that first used rescaled aggregate
     matrices in this fashion ([Flyamer, Gassler, and Imakaev et al.,
     2017](https://www.nature.com/articles/nature21711)). In the above
@@ -879,10 +890,10 @@ fanc aggregate output/hic/binned/fanc_example_100kb.hic \
 ## Aggregate over fixed width regions
 
 6)  Sometimes, you may want to use a fixed window surrounding a set of
-    features in the aggregate analysis, such as TAD boundaries. fanc
-    aggregate provides the -w option to plot the aggregate Hi-C matrix
-    in a window of size w around the centre of each region in the list
-    provided.
+    features in the aggregate analysis, such as TAD boundaries.
+    `fanc aggregate` provides the `-w` option to plot the aggregate Hi-C
+    matrix in a window of size `w` around the centre of each region in
+    the list provided.
 
 ``` r
 fanc aggregate \
@@ -916,10 +927,10 @@ fanc aggregate \
 
 ## Loops and other pairwise genomic regions
 
-6)  When you have loop calls or other pairwise genomic regions in BEDPE
-    format, you can use fanc aggregate to make aggregate loop plots. The
-    pre-set for this is –loops. Control the size of the plot using the
-    –pixels argument.
+6)  When you have loop calls or other pairwise genomic regions in
+    `BEDPE` format, you can use `fanc aggregate` to make aggregate loop
+    plots. The pre-set for this is `--loops`. Control the size of the
+    plot using the `--pixels` argument.
 
 ``` r
 fanc aggregate architecture/loops/rao2014.chr11_77400000_78600000.hic \
@@ -939,4 +950,4 @@ fanc aggregate architecture/loops/rao2014.chr11_77400000_78600000.hic \
 
 This tutorial is heavily based on the FAN-C documentation available at:
 
-      https://fan-c.readthedocs.io/
+<https://fan-c.readthedocs.io/>

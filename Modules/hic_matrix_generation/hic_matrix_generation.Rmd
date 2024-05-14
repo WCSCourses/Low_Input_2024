@@ -182,7 +182,7 @@ The following schematic will give you an overview of what file types fanc auto c
 
 Internally, `fanc auto` constructs its Hi-C processing pipeline from more specialised `fanc` commands. When describing the different pipeline steps and how you can control them below, we will also reference the specialised command that is used to build each step of the pipeline.
 
-(1) Check again the individual steps run by fanc auto by running
+(1) Check again the individual steps performed by fanc auto by running
 
 ```{r fanc_at, eval = FALSE}
 fanc auto SRR4271982_chr18_19_1.fastq.gzip \

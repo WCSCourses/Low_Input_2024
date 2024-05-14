@@ -251,7 +251,7 @@ more specialised `fanc` commands. When describing the different pipeline
 steps and how you can control them below, we will also reference the
 specialised command that is used to build each step of the pipeline.
 
-1)  Check again the individual steps run by fanc auto by running
+1)  Check again the individual steps performed by fanc auto by running
 
 ``` r
 fanc auto SRR4271982_chr18_19_1.fastq.gzip \
