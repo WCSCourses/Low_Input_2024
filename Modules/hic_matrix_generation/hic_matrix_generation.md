@@ -3,9 +3,22 @@ Generating Hi-C matrices
 
 <!-- hic_matrix_generation.md is generated from hic_matrix_generation.Rmd. Please edit that file -->
 
+# Introduction
+
+Hi-C (Chromosome conformation capture (3C) combined with deep
+sequencing) is a technique used to capture the spatial organisation of
+chromatin within the nucleus.
+
+In this tutorial we will learn how to analyse the raw data coming from
+these datasets using (mostly) a single tool: FAN-C. By the end of the
+tutorial you should be able to generate normalised contact frequency
+matrices from your data and derive features such as Compartments,
+Insulation scores and Topologically Associating Domains from it.
+
 # Practical 1: Getting started with FAN-C
 
-1)  Start the VirtualBox machine for the course on your computer.
+1)  If you haven’t do so, please start the VirtualBox virtual machine
+    for the course on your computer.
 
 2)  FAN-C [(Kruse et al., Genome Biology
     2020)](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02215-9)
@@ -52,8 +65,8 @@ fanc auto
     FASTQ files, the name of the restriction enzyme used, the genome
     studied and an output folder. To know the arguments that are needed
     to run each analysis and get a little help on the subcommand of
-    interest we can simply type: fanc \<subcommand\> –help. For example,
-    we can check the help for fanc auto by typing:
+    interest we can simply type: `fanc \<subcommand\> --help`. For
+    example, we can check the help for `fanc auto` by typing:
 
 ``` r
 fanc auto --help
@@ -67,38 +80,50 @@ fanc auto --help
 
 For [fanc
 auto](https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-generate-hic/fanc_auto.html),
-the help section includes two types of arguments: positional and
-optional arguments. Some arguments are expected in a specific order
-after the subcommand and thus are called positional arguments. In
-addition to positional arguments, optional arguments allow for more
-control over the subcommand. In case of fanc auto important optional
+the help section includes two types of arguments: `positional` and
+`optional` arguments. Some arguments are expected in a specific order
+after the subcommand and thus are called `positional` arguments. In
+addition to positional arguments, `optional` arguments allow for more
+control over the subcommand. In case of `fanc auto` important optional
 arguments include specifying the genome and restriction enzymes used.
 
 # Practical 2: Example Hi-C matrix generation with FAN-C
 
-For this example, we are going to use the command fanc auto (see
+For this example, we are going to use the command `fanc auto` (see
 [Generating Hi-C matrices with
 fanc](https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-generate-hic/fanc_auto.html#fanc-auto))
 to construct a Hi-C map from a subset of a previously published adrenal
 tissue dataset ([SRR4271982 of
 GSM2322539](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2322539)).
 For this course we have also downloaded K562 Hi-C data which will be
-analysed in practical 11 using what we learnt in this example. If the
-MiSeq sequencing for your samples has already finished by now, we can
-also analyse this data instead.
+analysed in practical 11 using what we learnt in this example.
 
-1)  Copy example files from shared folder into working folder
+1)  Create a working directory and copy the example Hi-C files into it
 
 ``` r
+# Go to the home directory in the virtual machine
 cd
-scp /media/sf_VM_Shared_Folder/examples.zip .
-# Change the path to the shared folder path in your system
-# Or download the data from our Keeper repository like: # wget -O examples.zip "https://keeper.mpdl.mpg.de/d/147906745b634c779ed3/files/?p=/examples.zip&dl=1"
+
+# Create a new working directory called hic
+mkdir hic
+
+# move into it
+cd hic
+
+# copy the example Hi-C data into this folder
+scp /media/manager/examples.zip .
+
+# or download the data from our Keeper repository like: 
+# wget -O examples.zip "https://keeper.mpdl.mpg.de/d/147906745b634c779ed3/files/?p=/examples.zip&dl=1" 
+# make sure to remove the # symbol from the previous line in order for it to work
+
+# unzip the data and change into the resulting directory
 unzip examples.zip
 cd examples
 ```
 
-2)  From the newly created examples folder, run:
+2)  Now let’s generate a contact frequency matrix using a single
+    command. From within the `examples` folder, run:
 
 ``` r
 fanc auto SRR4271982_chr18_19_1.fastq.gzip \
@@ -108,23 +133,26 @@ fanc auto SRR4271982_chr18_19_1.fastq.gzip \
   --split-ligation-junction -q 30 --run-with test
 ```
 
-The –run-with test argument causes fanc to only print the commands it
-would execute, but to exit before running any processing steps. Use this
-to review the pipeline and ensure you chose the right parameters and
-that there are no errors. When you remove the –run-with test argument,
-fanc will work through the pipeline. On a modern desktop computer with
-at least four computing cores the command should take less than 30
-minutes to finish. It will generate several binned, bias-corrected Hi-C
-matrices from the FASTQ input.
+The `--run-with test` argument causes `fanc` to only print the commands
+it would execute, but to exit before running any processing steps. Use
+this to review the pipeline and ensure you chose the right parameters
+and that there are no errors.
 
-3)  Run fanc on the example data by removing the –run-with test argument
-    from the command above. (THIS STEP WILL TAKE ~30 MINUTES.) Leave
-    this process running and open a new terminal to work with in the
-    meantime. You can read details about fanc auto and all of its
-    parameters in [Generating Hi-C matrices with
-    fanc](https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-generate-hic/fanc_auto.html#fanc-auto). (4)
-    fanc auto will generate the following folder structure in the output
-    folder:
+When you remove the `--run-with test` argument, `fanc` will work through
+the pipeline. On a modern desktop computer with at least four computing
+cores the command should take less than 30 minutes to finish. It will
+generate several binned, bias-corrected Hi-C matrices from the FASTQ
+input.
+
+3)  Run fanc on the example data by removing the `--run-with test`
+    argument from the command above. (**THIS STEP WILL TAKE ~30
+    MINUTES.**) Leave this process running and open a new terminal to
+    work with in the meantime. You can read details about `fanc auto`
+    and all of its parameters in [Generating Hi-C matrices with
+    fanc](https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-generate-hic/fanc_auto.html#fanc-auto).
+
+4)  `fanc auto` will generate the following folder structure in the
+    output folder:
 
 ``` r
 output
@@ -141,17 +169,17 @@ You can check it by exploring the output folder in a new terminal
 window:
 
 ``` r
-cd ~/examples/
+cd ~/hic/examples/
 ls -R output/
 ```
 
-The processed .bam, .pairs and .hic files will be added in these folders
-after completion of the pipeline.
+The processed `.bam`, `.pairs` and `.hic` files will be added in these
+folders after completion of the pipeline.
 
-5)  Check the output bam file as soon as it is ready by typing
+5)  Check the output `.bam` file as soon as it is ready by typing
 
 ``` r
-      samtools view output/sam/SRR4271982_chr18_19_1.bam | head      
+samtools view output/sam/SRR4271982_chr18_19_1.bam | head
 ```
 
 Congratulations! You have generated your first Hi-C matrix.
@@ -170,7 +198,7 @@ This will plot the region 63-70Mb of chromosome 18 in the familiar Hi-C
 plot. Note that this dataset is very small and hence the quality of the
 matrix not particularly great - but TADs are clearly visible.
 
-2)  You can find details about the plotting executable fancplot in
+2)  You can find details about the plotting executable `fancplot` in
     [Basic
     usage](https://fan-c.readthedocs.io/en/latest/fancplot-executable/fancplot_basic.html#fancplot-executable).
     Or by typing
@@ -180,17 +208,17 @@ fancplot --help
 ```
 
 Similar to the fanc command, we can access the help section for each
-plot type by adding the plot type before the help argument:
+plot type by adding the plot type before the `help` argument:
 
 ``` r
       fancplot -p triangular --help
 ```
 
-3)  Scroll around the genome and save a .png image using the interactive
-    window.
+3)  Scroll around the genome and save a `.png` image using the
+    interactive window.
 
 4)  Alternatively, we can save the plot directly in pdf format by
-    specifying an –output argument like:
+    specifying an `--output` argument like:
 
 ``` r
 fancplot chr18:63mb-70mb \
@@ -210,17 +238,17 @@ fanc auto can handle and how they are processed downstream.
 
 </center>
 
-fanc auto will map reads in FASTQ (or gzipped FASTQ) files to a
-reference genome, generating SAM/BAM files. SAM/BAM files with
+`fanc auto` will map reads in `FASTQ` (or gzipped `FASTQ`) files to a
+reference genome, generating `SAM/BAM` files. `SAM/BAM` files with
 paired-end reads will be automatically sorted and mate pairs will be
-matched to generate Pairs files. Pairs files will be converted into
-fragment-level Hic objects. Multiple fragment-level Hic objects will be
-merged into a single Hi-C object. Finally, the fragment-level Hic object
-will be binned at various bin sizes.
+matched to generate `Pairs` files. `Pairs` files will be converted into
+fragment-level `Hic` objects. Multiple fragment-level `Hic` objects will
+be merged into a single Hi-C object. Finally, the fragment-level `Hic`
+object will be binned at various bin sizes.
 
-Internally, fanc auto constructs its Hi-C processing pipeline from more
-specialised fanc commands. When describing the different pipeline steps
-and how you can control them below, we will also reference the
+Internally, `fanc auto` constructs its Hi-C processing pipeline from
+more specialised `fanc` commands. When describing the different pipeline
+steps and how you can control them below, we will also reference the
 specialised command that is used to build each step of the pipeline.
 
 1)  Check again the individual steps run by fanc auto by running
@@ -233,13 +261,13 @@ fanc auto SRR4271982_chr18_19_1.fastq.gzip \
   --split-ligation-junction -q 30 --run-with test
 ```
 
-Three major steps constitute the core of the pipeline: fanc map, fanc
-pairs and fanc hic. To (iteratively) map FASTQ files directly with
-FAN-C, use the [fanc
+Three major steps constitute the core of the pipeline: `fanc map`,
+`fanc pairs` and `fanc hic`. To (iteratively) map FASTQ files directly
+with FAN-C, use the [fanc
 map](https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-generate-hic/fanc_modular_steps.html#fanc-map-mapping-fastq-files)
 command.
 
-2)  Here is a minimal example: (DO NOT RUN)
+2)  Here is a minimal example: (**DO NOT RUN**)
 
 ``` r
 fanc map SRR4271982_chr18_19_1.fastq.gzip \
@@ -248,7 +276,7 @@ fanc map SRR4271982_chr18_19_1.fastq.gzip \
 ```
 
 fanc map will autodetect if you supply a BWA or Bowtie2 index, so the
-following command would use Bowtie2 as a mapper: (DO NOT RUN)
+following command would use Bowtie2 as a mapper: (**DO NOT RUN**)
 
 ``` r
 fanc map SRR4271982_chr18_19_1.fastq.gzip \
@@ -256,16 +284,17 @@ fanc map SRR4271982_chr18_19_1.fastq.gzip \
       SRR4271982_chr18_19_1.sam
 ```
 
-You can change the suffix of the output file to .bam and fanc map will
-automatically convert the mapping output to BAM format.
+You can change the suffix of the output file to `.bam` and `fanc map`
+will automatically convert the mapping output to `BAM` format.
 
-3)  Because of the chimeric nature of Hi-C fragments, fanc auto performs
-    iterative mapping as a default: Reads are initially trimmed to 25bp
-    (change this with the -m option) before mapping, and then
-    iteratively expanded by 10bp (change the step size with the -s
+3)  Because of the chimeric nature of Hi-C fragments, `fanc auto`
+    performs iterative mapping as a default: Reads are initially trimmed
+    to 25bp (change this with the `-m` option) before mapping, and then
+    iteratively expanded by 10bp (change the step size with the `-s`
     option) until a unique, high quality mapping location can be found.
-    The associated quality cut-off is 3 for BWA and 30 for Bowtie2, but
-    can be changed with the -q parameter. (DO NOT RUN)
+    The associated quality cut-off is **3 for BWA** and **30 for
+    Bowtie2**, but can be changed with the `-q` parameter. (**DO NOT
+    RUN**)
 
 ``` r
 # expand by 5bp every iteration and accept lower quality
@@ -279,13 +308,13 @@ fanc map SRR4271982_chr18_19_1.fastq.gzip \
     often sequenced through a ligation junction, which BWA can often
     detect automatically. Nonetheless, mapping may be improved by
     splitting reads at predicted ligation junctions from the start. To
-    enable this, use the -r parameter and supply the name of a
+    enable this, use the `-r` parameter and supply the name of a
     restriction enzyme (e.g. HindIII or MboI). The name will be used to
     look up the enzyme’s restriction pattern, predict the sequence of a
     ligation junction, and split reads at the predicted junction before
     mapping starts. Reads split in this manner will have an additional
-    attribute in the SAM/BAM file ZL:i:\<n\> where \<n\> is an integer
-    denoting the part of the split read. (DO NOT RUN)
+    attribute in the `SAM/BAM` file `ZL:i:\<n\>` where `\<n\>` is an
+    integer denoting the part of the split read. (**DO NOT RUN**)
 
 ``` r
 # Split reads at HindIII ligation junction before mapping
@@ -295,22 +324,23 @@ fanc map SRR4271982_chr18_19_1.fastq.gzip \
 ```
 
 Final practical arguments to speed up the mapping. We can assign more
-threads to the mapping process using the -t parameter. If you are using
-Bowtie2, you can additionally use the –memory-map option, which will
-load the entire Bowtie2 index into memory to be shared across all
+threads to the mapping process using the `-t` parameter. If you are
+using Bowtie2, you can additionally use the `--memory-map` option, which
+will load the entire Bowtie2 index into memory to be shared across all
 Bowtie2 processes. Use this option if your system has a lot of memory
-available to speed up the mapping. Finally, if you are using the -tmp
-option, which causes fanc auto to perform most pipeline steps in a
-temporary directory, you may want to use the –split-fastq option to
+available to speed up the mapping. Finally, if you are using the `-tmp`
+option, which causes `fanc auto` to perform most pipeline steps in a
+temporary directory, you may want to use the `--split-fastq` option to
 split the FASTQ files into smaller chunks before mapping, so you can
 save space on your tmp partition. In practice, most of these parameters
-have sensible defaults in fanc auto. You might want to enforce iterative
-mapping to increase the number of reads recovered and increase the
-number of threads to be used
+have sensible defaults in `fanc auto`. You might want to enforce
+iterative mapping to increase the number of reads recovered and increase
+the number of threads to be used. Or you might switch to BWA mapping
+which doesn’t need iterative mapping.
 
 # Practical 5: fanc pairs: Generating and filtering read Pairs
 
-The fanc pairs command handles the creation and modification of Pairs
+The `fanc pairs` command handles the creation and modification of Pairs
 objects, which represent the mate pairs in a Hi-C library mapped to
 restriction fragments. Possible inputs are: two SAM/BAM files
 (paired-end reads, sorted by read name), a [HiC-Pro valid pairs
@@ -324,8 +354,8 @@ However, we do recommend the installation of Sambamba, which can greatly
 speed up the SAM sorting step required for merging mate pairs into the
 Pairs object.
 
-1)  A minimal fanc auto command using SAM/BAM files could look like
-    this: (DO NOT RUN)
+1)  A minimal `fanc auto` command using `SAM/BAM` files could look like
+    this: (**DO NOT RUN**)
 
 ``` r
 fanc auto output/sam/SRR4271982_chr18_19_1.bam \
@@ -333,8 +363,8 @@ fanc auto output/sam/SRR4271982_chr18_19_1.bam \
       output2/ -g hg19_chr18_19_re_fragments.bed
 ```
 
-2)  while minimal fanc pairs command using SAM/BAM files could look like
-    this: (DO NOT RUN)
+2)  while minimal `fanc pairs` command using `SAM/BAM` files could look
+    like this: (**DO NOT RUN**)
 
 ``` r
 fanc pairs output/sam/SRR4271982_chr18_19_1_sort.bam \
@@ -343,34 +373,35 @@ fanc pairs output/sam/SRR4271982_chr18_19_1_sort.bam \
       -g hg19_chr18_19_re_fragments.bed
 ```
 
-The -g or –genome parameter is mandatory, and is used to load (or
+The `-g` or `--genome` parameter is mandatory, and is used to load (or
 construct) the restriction fragment regions necessary for building the
 fragment-level Hi-C object. You can either directly provide a
 region-based file with restriction fragments (most file formats are
 supported, including BED and GFF), or use a FASTA file with the genomic
-sequence in conjunction with the -r or –restriction-enzyme parameter. In
-the latter case, fanc auto will perform an in silico digestion of the
-genome and use the resulting restriction fragments from there.
+sequence in conjunction with the `-r` or `--restriction-enzyme`
+parameter. In the latter case, fanc auto will perform an in silico
+digestion of the genome and use the resulting restriction fragments from
+there.
 
 # Practical 6: Pair-level filtering
 
-fanc pairs provides a lot of parameters for filtering read pairs
+`fanc pairs` provides a lot of parameters for filtering read pairs
 according to different criteria. By default, if not specified otherwise,
 no filtering is performed on the read pairs (passthrough). Typically,
-however, you will at least want to filter out unmappable (-m) and
-multimapping reads (-u or -us). It is also a good idea to filter by
-alignment quality (-q \<n\>). Good cutoffs for Bowtie2 and BWA are 30
+however, you will at least want to filter out unmappable (`-m`) and
+multimapping reads (`-u` or `-us`). It is also a good idea to filter by
+alignment quality (-q `<n>`). Good cutoffs for Bowtie2 and BWA are 30
 and 3, respectively. If you suspect your Hi-C library to be contaminated
 by DNA from a different organism, you can align your original reads to a
-different genome and pass the resulting SAM/BAM file to the -c patameter
-(ensure no unmappable reads are in the file!). This will filter out all
-reads that have a valid alignment in the putative contaminants genome
-(by qname). All of the above filters operate on single reads, but will
-filter out the pair if either of the reads is found to be invalid due to
-a filtering criterion.
+different genome and pass the resulting `SAM/BAM` file to the `-c`
+parameter (ensure no unmappable reads are in the file!). This will
+filter out all reads that have a valid alignment in the putative
+contaminants genome (by qname). All of the above filters operate on
+single reads, but will filter out the pair if either of the reads is
+found to be invalid due to a filtering criterion.
 
-1)  while minimal fanc pairs command using SAM/BAM files could look like
-    this: (DO NOT RUN)
+1)  while minimal fanc pairs command using `SAM/BAM` files could look
+    like this: (**DO NOT RUN**)
 
 ``` r
 fanc pairs output/sam/SRR4271982_chr18_19_1_sort.bam \
@@ -383,7 +414,7 @@ fanc pairs output/sam/SRR4271982_chr18_19_1_sort.bam \
 
 2)  You can actually check how many pairs were filtered at this step by
     checking the statistics plots being generated in the output folder
-    (See the plot on the left)
+    (see plot below).
 
 ``` r
 ls output/plots/stats/fanc_example.pairs.stats.pdf
@@ -403,7 +434,7 @@ ls output/plots/stats/fanc_example.pairs.stats.pdf
     with the -p \<n\> parameter, where \<n\> denotes the distance
     between the start of two alignments that would still be considered a
     duplicate. Normally you would use 1 or 2, but you can use higher
-    values to be more stringent with filtering. (DO NOT RUN)
+    values to be more stringent with filtering. (**DO NOT RUN**)
 
 ``` r
 fanc pairs output/pairs/SRR4271982_chr18_19.pairs \
@@ -427,7 +458,7 @@ fanc pairs output/pairs/SRR4271982_chr18_19.pairs \
     restriction sites using the -d parameter. To determine that cutoff,
     or to detect any issues with the Hi-C library, you can first use the
     –re-dist-plot parameter. Note that this will only plot a sample of
-    10,000 read pairs for a quick assessment: (DO NOT RUN)
+    10,000 read pairs for a quick assessment: (**DO NOT RUN**)
 
 ``` r
 fanc pairs --re-dist-plot re-dist.png \
@@ -453,7 +484,7 @@ ls output/plots/stats/fanc_example.pairs.re_dist.pdf
     products. You can filter these using the -i \<n\> and -o \<n\>
     parameters, for the inward and outward ligation errors,
     respectively. If you need help finding a good cut-off, you may use
-    the –ligation-error-plot parameter. (DO NOT RUN)
+    the –ligation-error-plot parameter. (**DO NOT RUN**)
 
 ``` r
 fanc pairs --ligation-error-plot ligation-err.png \
@@ -483,7 +514,8 @@ this is not always 100% reliable.
 The fanc hic command is used to generate fragment-level and
 binned+filtered Hi-C matrices.
 
-1)  You can use FAN-C Pairs files as input for fanc hic: (DO NOT RUN)
+1)  You can use FAN-C Pairs files as input for fanc hic: (**DO NOT
+    RUN**)
 
 ``` r
 fanc hic \
@@ -498,7 +530,8 @@ fragment-level Hic objects which are then merged into a single object.
 If you already have a fragment-level Hic file and you want to bin it, or
 perform filtering or matrix balancing, you can also use this as input:
 
-2)  You can use FAN-C Pairs files as input for fanc hic: (DO NOT RUN)
+2)  You can use FAN-C Pairs files as input for fanc hic: (**DO NOT
+    RUN**)
 
 ``` r
 fanc hic \
@@ -547,15 +580,15 @@ ls output/plots/stats/fanc_example_*.stats.pdf
 
 </center>
 
-# Practical 9: Quality control: Cis/trans ratio
+# Practical 9: Quality control: cis/trans ratio
 
 A useful metric to assess the quality of a Hi-C experiment is the ratio
 between Hi-C contacts happening between loci inside the same chromosome
-(cis) and contacs happening between fragments in different chromosomes
-(trans). Problems with suboptimal fixation would lead to a loss of cis
-interactions and a gain of trans interactions. Additionally, problems
-with and excess of ligations would lead to an artificial increase in
-trans contacts.
+(*cis*) and contacts happening between fragments in different
+chromosomes (*trans*). Problems with suboptimal fixation would lead to a
+loss of *cis* interactions and a gain of *trans* interactions.
+Additionally, problems with and excess of ligations would lead to an
+artificial increase in *trans* contacts.
 
 1)  FAN-C provides a tool to calculate the cis/trans metric and to run
     it you can just run:
@@ -574,24 +607,29 @@ artificially high since we are missing many inter-chromosomal contacts.
 
 # Practical 10: Working with Cooler, Juicer, and text files
 
-FAN-C is fully compatible with Hi-C files from Cooler (.cool and .mcool)
-and Juicer (.hic). There is no need to convert them to FAN-C format, you
-can use them directly in any fanc command. Text files, such as HiC-Pro
-output or 4D Nucleome pairs files must be converted to FAN-C format
-before they can be used in any commands. Please note that juicer’s .hic
-format is not the same as FAN-C’s .hic format.
+FAN-C is fully compatible with Hi-C files from Cooler (`.cool` and
+`.mcool`) and Juicer (`.hic`). There is no need to convert them to FAN-C
+format, you can use them directly in any `fanc` command. Text files,
+such as HiC-Pro output or 4D Nucleome pairs files must be converted to
+FAN-C format before they can be used in any commands. **IMPORTANT**:
+Please note that juicer’s `.hic` format is not the same as FAN-C’s
+`.hic` format.
 
-1)  To convert our format to either cooler’s multi-resolution .cool
-    format or juicer’s .hic format you can simply:
+1)  To convert our format to either cooler’s multi-resolution `.cool`
+    format or juicer’s `.hic` format you can simply:
 
 ``` r
-fanc to-cooler \ output/hic/binned/fanc_example_1mb.hic \ output/hic/binned/fanc_example_1mb.cool
+fanc to-cooler \
+    output/hic/binned/fanc_example_1mb.hic \
+    output/hic/binned/fanc_example_1mb.cool
 ```
 
 2)  or:
 
 ``` r
-fanc to-juicer \ output/hic/binned/fanc_example_1mb.hic \ output/hic/binned/fanc_example_1mb.juicer.hic
+fanc to-juicer \
+    output/hic/binned/fanc_example_1mb.hic \
+    output/hic/binned/fanc_example_1mb.juicer.hic
 ```
 
 After doing that you will also be able to use all the tools associated
@@ -615,7 +653,7 @@ install [higlass-server](https://github.com/higlass/higlass-server)
 instead. There is a great tutorial to use HiGlass in
 <https://hms-dbmi.github.io/hic-data-analysis-bootcamp/#24>
 
-3)  In order to visualise our matrix in HiGlass (and if Docker ir
+3)  In order to visualise our matrix in HiGlass (and if Docker is
     running) we need to first start HiGlass:
 
 ``` r
@@ -655,26 +693,29 @@ We will now analyse K562 Hi-C data generated by [Moquin et al
 stored in the Gene Expression Database (GEO) database under the
 accession number
 [GSE98120](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE98120).
-At this point we have three analysis options. Depending on how fast we
+At this point we have two analysis options. Depending on how fast we
 were on the first 10 exercises we will run fanc auto either in A. the
-entire K562 dataset, B. in a subset of the data for chromosomes 18 and
-19 or C. In the libraries that were generated during the course. We can
-also split in groups that do each and compare results at the end.
-Please, modify the commands below to point to the correct .fastq files.
+entire K562 dataset, or B. in a subset of the data for chromosomes 18
+and 19. We can also split in groups that do each and compare results at
+the end. Please, modify the commands below to point to the correct
+.fastq.gz files.
 
 ## Option A.
 
 1)  Sequence Read Archives (SRA) files should be available in the shared
     folder under hic_k562/. These SRA files were downloaded using
-    commands like: (DO NOT RUN)
+    commands like: (**DO NOT RUN**)
 
 ``` r
 wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5470534/SRR5470534
+wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5470534/SRR5470535
+wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5470534/SRR5470536
+wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5470534/SRR5470537
 ```
 
 2)  We can convert the downloaded SRA files into FASTQ files using the
-    sratoolkit like: (This will take ~15-20 minutes to run, pick one of
-    the SRA files and follow this tutorial with it.)
+    sratoolkit like: (**This will take ~15-20 minutes to run, pick one
+    of the SRA files and follow this tutorial with it.**)
 
 ``` r
 fastq-dump --outdir ./ --gzip --split-3 SRR5470534
@@ -718,36 +759,18 @@ fastqc -o fastqc/ SRR5470534_2.chr18_chr19.fastq.gz
 2)  Examine the fastQC output. How big are they? Are they any good?
     Should we run adaptor trimming on them?
 
-## Option C.
-
-Copy the .fastq files generated in the course to your home.
-
-3)  As mentioned earlier in the course, it is always a good idea to run
-    fastQC on any next-generation sequencing library to spot potential
-    technical problems with adaptor contaminations and remove them
-    beforehand:
-
-``` r
-mkdir fastqc
-fastqc -o fastqc/ SRR5470534_1.chr18_chr19.fastq.gz
-fastqc -o fastqc/ SRR5470534_2.chr18_chr19.fastq.gz
-```
-
-4)  Examine the fastQC output. How big are they? Are they any good?
-    Should we run adaptor trimming on them?
-
 # Practical 12: Running FAN-C
 
 As we did in practical number 2, we can run the entire FAN-C pipeline
 with the fanc auto command. We need to make a couple of adjustments to
 make sure that FAN-C runs smoothly. Option A. (1) This is code that we
 usually use to analyse new Hi-C files in our lab. Can you spot the 7
-changes that we made to the example in practical number 2? (DO NOT RUN
-YET)
+changes that we made to the example in practical number 2? (**DO NOT
+RUN** YET)
 
 ``` r
-GENOME='/Genomes/UCSC/hg38/Sequence/hg38.negspy.fa'
-GENOMEIDX='/Genomes/ UCSC/hg38/BWAIndex/hg38.negspy.fa'
+GENOME='/Genomes/UCSC/hg38/Sequence/hg38.negspy.fa' # This file is not provided here
+GENOMEIDX='/Genomes/ UCSC/hg38/BWAIndex/hg38.negspy.fa' # This file is not provided here
 mkdir hic_BWA
 fanc auto \
       SRR5470534_1.fastq.gz \
@@ -798,7 +821,8 @@ fanc auto SRR4271982_chr18_19_1.fastq.gzip \
     Bowtie2 MAPQ scores have different
     ranges](https://sequencing.qcfail.com/articles/mapq-values-are-really-useful-but-their-implementation-is-a-mess/).
     In our experience, -q 3 works best for filtering multi-mapping reads
-    when using BWA, while -q 30 works best for Bowtie2. (DO NOT RUN YET)
+    when using BWA, while -q 30 works best for Bowtie2. (**DO NOT RUN**
+    YET)
 
 ``` r
 GENOME='/Genomes/Homo_sapiens/UCSC/hg38/Sequence/hg38.negspy.fa'
@@ -819,21 +843,21 @@ fanc auto \
       --split-ligation-junction -q 3 -f
 ```
 
-As a note, binned .hic files and stat plots that result from running the
-above pipeline can be found in our shared Keeper library.
+As a note, binned `.hic` files and stat plots that result from running
+the above pipeline can be found in our shared Keeper library.
 
 IMPORTANT: For people following option A, change the number of threads
 to 4, run the command above and wait. (You can find the result files
 from running fanc in this mode already either in your Virtual Machine
 shared folder or in our shared keeper library:
-<https://keeper.mpdl.mpg.de/d/9b1c1788f97642a188f3/>) For people
-following option B change the GENOME variable to the absolute path of
-the FASTA file (hg19_chr18_19.fa) and GENOMEIDX variable to the absolute
-path of the (bwa-index/hg19_chr18_19.fa) in the examples folder. Then
-change the paths to the subset fastq files you chose and change the
-number of threads to 4, run the command above and wait. For people
-running C. Change the paths to the subset fastq files you chose and
-change the number of threads to 4, run the command above and wait.
+<https://keeper.mpdl.mpg.de/d/9b1c1788f97642a188f3/>)
+
+For people following option B change the `GENOME` variable to the
+absolute path of the FASTA file (hg19_chr18_19.fa) and `GENOMEIDX`
+variable to the absolute path of the (bwa-index/hg19_chr18_19.fa) in the
+examples folder. Then change the paths to the subset fastq files you
+chose and change the number of threads to 4, run the command above and
+wait.
 
 For the steps in the next tutorial, please use the results from this
 step to perform the rest of the analysis.
@@ -854,7 +878,7 @@ among DNA loci \<5000 bp apart? Or should we have used smaller
 thresholds to retain more reads?
 
 2)  Look at the read pair filter statistics plot generated as part of
-    fanc auto. How does this library compare to the one used in the
+    `fanc auto`. How does this library compare to the one used in the
     first example?
 
 3)  Calculate cis-trans ratios on the 2mb (or 1mb) binned matrix.
