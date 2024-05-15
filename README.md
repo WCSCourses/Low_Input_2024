@@ -1,4 +1,4 @@
-# <img src="https://coursesandconferences.wellcomeconnectingscience.org/wp-content/themes/wcc_courses_and_conferences/dist/assets/svg/logo.svg" width="200" height="200">
+# ![alt text](https://drive.google.com/file/d/1Uw7VN5mObFG5NHaJFMEFMcNEHNeyWKPv/view?usp=drive_link)
 
 # Low Input Epigenomics 2024 
 
