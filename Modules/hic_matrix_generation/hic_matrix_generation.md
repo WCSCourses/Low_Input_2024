@@ -65,7 +65,7 @@ fanc auto
     FASTQ files, the name of the restriction enzyme used, the genome
     studied and an output folder. To know the arguments that are needed
     to run each analysis and get a little help on the subcommand of
-    interest we can simply type: `fanc \<subcommand\> --help`. For
+    interest we can simply type: `fanc <subcommand> --help`. For
     example, we can check the help for `fanc auto` by typing:
 
 ``` r
@@ -703,8 +703,8 @@ the end. Please, modify the commands below to point to the correct
 ## Option A.
 
 1)  Sequence Read Archives (SRA) files should be available in the shared
-    folder under hic_k562/. These SRA files were downloaded using
-    commands like: (**DO NOT RUN**)
+    folder under `~/LowInput_CourseData/HI_C/`. These SRA files were
+    downloaded using commands like: (**DO NOT RUN**)
 
 ``` r
 wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5470534/SRR5470534
@@ -718,6 +718,8 @@ wget https://sra-pub-run-odp.s3.amazonaws.com/sra/SRR5470534/SRR5470537
     of the SRA files and follow this tutorial with it.**)
 
 ``` r
+cd ~/LowInput_CourseData/HI_C/
+gzip -d SRR5470534.gz
 fastq-dump --outdir ./ --gzip --split-3 SRR5470534
 ```
 
@@ -743,12 +745,14 @@ fastqc -o fastqc/ SRR5470534_2.fastq.gz
 ## Option B.
 
 A subset of this data for this accession number can be found either in
-your Virtual Machine shared folder or online in our shared Keeper
-library: <https://keeper.mpdl.mpg.de/d/9b1c1788f97642a188f3/>
+your Virtual Machine shared folder in a compressed folder called
+`K562.zip` or online in our shared Keeper library:
+<https://keeper.mpdl.mpg.de/d/9b1c1788f97642a188f3/>
 
 1)  If not available in the shared folder, please download each subset
     .fastq file into your computer by clicking on the sample that you
-    will focus on. Then let’s assess the quality of the .fastq files:
+    will focus on. Now, as recommended for any new dataset we get, let’s
+    assess the quality of the .fastq files using a tool such as FASTQC:
 
 ``` r
 mkdir fastqc
@@ -769,6 +773,7 @@ changes that we made to the example in practical number 2? (**DO NOT
 RUN** YET)
 
 ``` r
+
 GENOME='/Genomes/UCSC/hg38/Sequence/hg38.negspy.fa' # This file is not provided here
 GENOMEIDX='/Genomes/ UCSC/hg38/BWAIndex/hg38.negspy.fa' # This file is not provided here
 mkdir hic_BWA
@@ -825,8 +830,12 @@ fanc auto SRR4271982_chr18_19_1.fastq.gzip \
     YET)
 
 ``` r
-GENOME='/Genomes/Homo_sapiens/UCSC/hg38/Sequence/hg38.negspy.fa'
-GENOMEIDX='/Genomes/Homo_sapiens/UCSC/hg38/BWAIndex/hg38.negspy.fa'
+# GENOME='/Genomes/Homo_sapiens/UCSC/hg38/Sequence/hg38.negspy.fa'
+# GENOMEIDX='/Genomes/Homo_sapiens/UCSC/hg38/BWAIndex/hg38.negspy.fa'
+
+GENOME='~/hic/examples/hg19_chr18_19.fa'
+GENOMEIDX='~/hic/examples/bwa-index/hg19_chr18_19.fa'
+
 mkdir hic_BWA
 
 fanc auto \
