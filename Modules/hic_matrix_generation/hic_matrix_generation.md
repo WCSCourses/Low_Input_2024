@@ -111,7 +111,7 @@ mkdir hic
 cd hic
 
 # copy the example Hi-C data into this folder
-scp /media/manager/examples.zip .
+scp ~/LowInput_CourseData/examples.zip .
 
 # or download the data from our Keeper repository like: 
 # wget -O examples.zip "https://keeper.mpdl.mpg.de/d/147906745b634c779ed3/files/?p=/examples.zip&dl=1" 
