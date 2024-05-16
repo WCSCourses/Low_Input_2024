@@ -68,7 +68,7 @@ the un-normalised expected values.
 ``` r
 fanc expected \
   -l "HindIII 5M" "HindIII 100k" \
-  "MboI 1M" "MboI 100k" "MboI 50k" -c chr19 \ 
+  "MboI 1M" "MboI 100k" "MboI 50k" -c chr19 \
   -p architecture/expected/expected_multi.png \
   architecture/other-hic/lowc_hindiii_5M_1mb.hic \
   architecture/other-hic/lowc_hindiii_100k_1mb.hic \
