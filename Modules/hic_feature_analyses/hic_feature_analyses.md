@@ -575,11 +575,16 @@ quantitative annotation of TAD strength.
     calling using tadtool we can use this example:
 
 ``` r
-# Installing TADtool
+# Downlaoding TADtool repo
 git clone https://github.com/vaquerizaslab/tadtool.git
-cd tadtool
-python setup.py install
-tadtool –help
+cd tadtool # change directory to the downloaded folder
+pwd #confirm that we are in /home/manager/hic/examples/tadtool/
+
+# To avoid incompatibility issues, we will run tadtool using python 2
+conda activate nucleoenv
+python --version # check that we have python 2.7.15
+pip install tadtool==0.79
+tadtool –-help
 ```
 
 ``` r
