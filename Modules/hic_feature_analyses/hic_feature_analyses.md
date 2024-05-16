@@ -309,6 +309,7 @@ Nat. Comms. 2018) using different restriction enzymes (MboI and
 HindIII), as well as different input cell numbers.
 
 ``` r
+mkdir architecture/pca/
 fanc pca -n "HindIII 100k" "HindIII 5M" \
   "MboI 100k" "MboI 1M" "MboI 50k" \
      -Z -s 100000 -r chr19 -p architecture/pca/lowc.pca.png \
