@@ -469,8 +469,8 @@ can use fanc boundaries to identify these regions.
 ``` r
 fanc boundaries \
   architecture/domains/fanc_example_100kb.insulation \
-  architecture/domains/fanc_example_100kb.insulation_boundaries \
-  -w 1mb 2mb
+  architecture/domains/fanc_example_100kb.insulation_boundaries_1mb.bed \
+  -w 1mb
 ```
 
 We get two output files with all insulation score minima and associated
