@@ -144,7 +144,7 @@ Finally, we sort the alignments by their genomic coordinates. Many analyses requ
 ```bash
 for BAM in data/alignment/*/*.bam
 do
-    sambamba sort --threads 4 -m 2G -o ${BAM/.bam/.sorted.bam} ${BAM}
+    sambamba sort --nthreads 4 -m 2G -o ${BAM/.bam/.sorted.bam} ${BAM}
 done
 ```
 
@@ -171,7 +171,7 @@ After aligning the reads and converting them into BAM files we want to remove re
 for BAM in data/alignment/*/*.sorted.bam
 do
     sambamba markdup --nthreads 4 --show-progress \
-    ${BAM} {BAM/.sorted.bam/.dupmarked.bam}
+    ${BAM} ${BAM/.sorted.bam/.dupmarked.bam}
 
     # This index will be necessary for `ataqv` later on
     sambamba index -t 4 ${BAM/.sorted.bam/.dupmarked.bam}
@@ -228,25 +228,26 @@ Whereas the first 4 metrics are useful to check for most sequencing experiments,
 for SAMPLE in ${SAMPLES[@]}
 do
     echo Counts for: ${SAMPLE}
-    # The number of sequenced fragments is equal to the number of lines in the fastq divided by 4
+    # The number of sequenced fragments is equal to the number of lines in the fastq
+    # divided by 4. Then we double the number, to account for the second reads.
     # Reads before trimming
-    echo $(($(zcat raw_data/${SAMPLE}_1.fastq.gz | wc -l)))
+    echo $(($(zcat raw_data/${SAMPLE}_1.fastq.gz | wc -l) / 4))
 
     # Reads after trimming
-    echo $(($(zcat data/trimmed/${SAMPLE}_1.fastq.gz | wc -l)))
+    echo $(($(zcat data/trimmed/${SAMPLE}_1.fastq.gz | wc -l) / 4))
 
     # We can easily count the number of alignments with `sambamba`
     # Directly after alignment
-    sambamba view -c data/alignment/${SAMPLE}/${SAMPLE}.bam
+    sambamba view -c data/alignment/${SAMPLE}/${SAMPLE}.bam 2> /dev/null
 
     # After removing duplicates
-    sambamba view -c data/alignment/${SAMPLE}/${SAMPLE}.noDups.bam
+    sambamba view -c data/alignment/${SAMPLE}/${SAMPLE}.noDups.bam 2> /dev/null
 
     # After removing mitochondrial reads
-    sambamba view -c data/alignment/${SAMPLE}/${SAMPLE}.noM.bam
+    sambamba view -c data/alignment/${SAMPLE}/${SAMPLE}.noM.bam 2> /dev/null
 
     # After removing alignments from blacklisted regions
-    sambamba view -c data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam
+    sambamba view -c data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam 2> /dev/null
 
     # Print a small separator between samples
     echo "--------"
@@ -258,7 +259,7 @@ From the number of alignments we can calculate the library complexity as the fra
 2) Estimate the correlation between replicates by calculating the pairwise correlation between samples:
 
 ```bash
-multiBamSummary -p 4 bins data/alignment/*/*.filtered.bam -out data/bamsummary.npz
+multiBamSummary bins -p 4 --bamfiles data/alignment/*/*.filtered.bam -out data/bamsummary.npz
 
 mkdir results
 
@@ -271,10 +272,10 @@ There are a range of tools that allow you to easily assess the fragment size dis
 
 ```bash
 zcat gencode.vM25.primary_assembly.annotation.gtf.gz | \
-    awk -v OFS='\t' '$3 == "transcript" { if ($7 == "+") { print $1, $4-1, $4, $12, ".". $7 } else { print $1, $4-1, $4, $12, ".". $7 }}' | \
+    awk -v OFS='\t' '$3 == "transcript" { if ($7 == "+") { print $1, $4-1, $4, $12, ".", $7 } else { print $1, $4-1, $4, $12, ".", $7 }}' | \
     tr -d '";' | \
     sort -k1,1 -k2,2n | \
-    unique > GRCm38.tss.bed
+    uniq > GRCm38.tss.bed
 ```
 
 4) Create `JSON` reports for each sample with `ataqv`
@@ -323,7 +324,7 @@ do
     bamCoverage -p 4 --binSize 5 \
     --normalizeUsing CPM \
     --ignoreForNormalization chrX chrY \
-    --bam data/alignment/${SAMPLE}/${SAMPLE}.filtered.sorted.bam -o data/coverage/${SAMPLE}.all.bw
+    --bam data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam -o data/coverage/${SAMPLE}.all.bw
 done
 ```
 
@@ -341,7 +342,7 @@ do
     --ignoreForNormalization chrX chrY \
     --extendReads \
     --maxFragmentLength 135 \
-    --bam data/alignment/${SAMPLE}/${SAMPLE}.filtered.sorted.bam -o data/coverage/${SAMPLE}.nfr.bw
+    --bam data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam -o data/coverage/${SAMPLE}.nfr.bw
 done
 ```
 
@@ -357,7 +358,7 @@ do
     --extendReads \
     --minFragmentLength 150 \
     --maxFragmentLength 290 \
-    --bam data/alignment/${SAMPLE}/${SAMPLE}.filtered.sorted.bam -o data/coverage/${SAMPLE}.mono.bw
+    --bam data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam -o data/coverage/${SAMPLE}.mono.bw
 done
 ```
 
@@ -382,7 +383,7 @@ Instead of letting `MACS2/3` build a model, like it would for ChIP-seq data, we 
 for SAMPLE in ${SAMPLES[@]}
 do
 macs3 callpeak \
-    -t data/alignment/${SAMPLE}.filtered.bam -n ${SAMPLE} \
+    -t data/alignment/${SAMPLE}/${SAMPLE}.filtered.bam -n ${SAMPLE} \
     --outdir data/peaks/${SAMPLE} \
     -f BAM -g mm -q 0.05 \
     --nomodel --shift -75 --extsize 150 \
