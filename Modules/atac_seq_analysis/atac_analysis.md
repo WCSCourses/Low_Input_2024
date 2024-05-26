@@ -231,10 +231,10 @@ do
     # The number of sequenced fragments is equal to the number of lines in the fastq
     # divided by 4. Then we double the number, to account for the second reads.
     # Reads before trimming
-    echo $(($(zcat raw_data/${SAMPLE}_1.fastq.gz | wc -l) / 4))
+    echo $(($(zcat raw_data/${SAMPLE}_1.fastq.gz | wc -l) / 4 * 2))
 
     # Reads after trimming
-    echo $(($(zcat data/trimmed/${SAMPLE}_1.fastq.gz | wc -l) / 4))
+    echo $(($(zcat data/trimmed/${SAMPLE}_1.fastq.gz | wc -l) / 4 * 2))
 
     # We can easily count the number of alignments with `sambamba`
     # Directly after alignment
