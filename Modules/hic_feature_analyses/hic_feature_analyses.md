@@ -68,7 +68,7 @@ the un-normalised expected values.
 ``` r
 fanc expected \
   -l "HindIII 5M" "HindIII 100k" \
-  "MboI 1M" "MboI 100k" "MboI 50k" -c chr19 \
+  "MboI 1M" "MboI 100k" "MboI 50k" -c chr19 \ 
   -p architecture/expected/expected_multi.png \
   architecture/other-hic/lowc_hindiii_5M_1mb.hic \
   architecture/other-hic/lowc_hindiii_100k_1mb.hic \
@@ -309,7 +309,6 @@ Nat. Comms. 2018) using different restriction enzymes (MboI and
 HindIII), as well as different input cell numbers.
 
 ``` r
-mkdir architecture/pca/
 fanc pca -n "HindIII 100k" "HindIII 5M" \
   "MboI 100k" "MboI 1M" "MboI 50k" \
      -Z -s 100000 -r chr19 -p architecture/pca/lowc.pca.png \
@@ -469,8 +468,8 @@ can use fanc boundaries to identify these regions.
 ``` r
 fanc boundaries \
   architecture/domains/fanc_example_100kb.insulation \
-  architecture/domains/fanc_example_100kb.insulation_boundaries_1mb.bed \
-  -w 1mb
+  architecture/domains/fanc_example_100kb.insulation_boundaries \
+  -w 1mb 2mb
 ```
 
 We get two output files with all insulation score minima and associated
@@ -576,16 +575,11 @@ quantitative annotation of TAD strength.
     calling using tadtool we can use this example:
 
 ``` r
-# Downlaoding TADtool repo
+# Installing TADtool
 git clone https://github.com/vaquerizaslab/tadtool.git
-cd tadtool # change directory to the downloaded folder
-pwd #confirm that we are in /home/manager/hic/examples/tadtool/
-
-# To avoid incompatibility issues, we will run tadtool using python 2
-conda activate nucleoenv
-python --version # check that we have python 2.7.15
-pip install tadtool==0.79
-tadtool –-help
+cd tadtool
+python setup.py install
+tadtool –help
 ```
 
 ``` r
