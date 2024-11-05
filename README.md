@@ -5,6 +5,8 @@
 ### Course details: 
 11 to 17 May 2024, Wellcome Genome Campus, Hinxton, 2024
 
+[Course Website](https://coursesandconferences.wellcomeconnectingscience.org/event/low-input-epigenomics-20240511/)
+
 Learn the latest approaches to study chromatin biology at the gene and genome-wide levels in rare cell populations
 
 ### Course Summary 
