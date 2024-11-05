@@ -1,9 +1,9 @@
-# <img src="https://coursesandconferences.wellcomeconnectingscience.org/wp-content/themes/wcc_courses_and_conferences/dist/assets/svg/logo.svg" width="200" height="200">
+<img src="https://coursesandconferences.wellcomeconnectingscience.org/wp-content/themes/wcc_courses_and_conferences/dist/assets/svg/logo.svg" width="300" height="50"> 
 
 # Low Input Epigenomics 2024 
 
 ### Course details: 
-11 to 17 May 2024, Wellcome Connecting Science, Wellcome Genome Campus, Hinxton, 2024
+11 to 17 May 2024, Wellcome Genome Campus, Hinxton, 2024
 
 Learn the latest approaches to study chromatin biology at the gene and genome-wide levels in rare cell populations
 
@@ -44,7 +44,7 @@ After attending the course, participants can expect to be able to:
 - Explore how low input genomic methods can be applied in development and disease research
 
 
-### Training Team         
+**Training Team**         
 
 - [Noelia Diaz](https://www.researchgate.net/profile/Noelia-Diaz-6), Institute of Marine Sciences (ICM-CSIC), Spain
 - [Kip Arlidge](https://www.linkedin.com/in/kiparlidge/), Canadore College, Canada
@@ -53,6 +53,15 @@ After attending the course, participants can expect to be able to:
 - Fabian Groll, The Institute of Cancer Research, UK
 - [Benjamin Hernandez Rodriguez](https://ben-hr.github.io/), Max Planck Institute for Molecular Biomedicine, Germany
 
+**Wellcome Connecting Science Team**
+
+- [Liã Barbara Arruda](https://www.wellcomeconnectingscience.org/person/barbara-arruda-lia/), Education Developer
+- [Karon Chapell](https://www.wellcomeconnectingscience.org/person/chappell-karon/), Events Organiser
+- [Martin Aslett](https://coursesandconferences.wellcomeconnectingscience.org/about-us/the-team/), Informatics Manager
+- [Vaishnavi Vikas Gangadhar](https://www.wellcomeconnectingscience.org/person/gangadhar-vaishnavi/), Informatics Technical Officer
+- [Cassandra Soo](https://uk.linkedin.com/in/cassandra-claire-soo-b3783277/ms?trk=people-guest_people_search-card), Laboratory Courses Manager
+- [Aaron Dean](https://uk.linkedin.com/in/aaron-dean-5b5a21163), Laboratory Technical Officer
+- [Christopher Adamson](https://www.wellcomeconnectingscience.org/person/adamson-chris/), Laboratory Operations Officer
 
 ### Course Manual
 **Module  - ATAC-seq**   
