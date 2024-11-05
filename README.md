@@ -47,7 +47,7 @@ After attending the course, participants can expect to be able to:
 
 | Course Date | Course Title | Location |Citation DOI |
 |-------------|--------------|----------|-------------|
-| 11 to 17 May 2024 | [Low Input Epigenomics](https://github.com/WCSCourses/Low_Input_2024) | Wellcome Genome Campus, Hinxton |Citation DOI |
+| 11 to 17 May 2024 | [Low Input Epigenomics](https://github.com/WCSCourses/Low_Input_Epigenomics) | Wellcome Genome Campus, Hinxton | [![DOI](https://zenodo.org/badge/693668431.svg)](https://doi.org/10.5281/zenodo.14038060) |
 
 ******
 
